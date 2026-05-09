@@ -235,7 +235,9 @@ td.cell-actions{padding-right:14px}
   .p-header{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #2C2A26;padding-bottom:3px;margin-bottom:4px}
   .p-header h2{font-size:13px;font-weight:700;margin:0}
   .p-date{font-size:7.5px;color:#555}
-  .p-cards{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:4mm;height:calc(277mm - 14mm)}
+  .p-page{page-break-after:always;break-after:page}
+  .p-page:last-child{page-break-after:avoid;break-after:avoid}
+  .p-cards{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:4mm;height:calc(277mm - 18mm)}
   .p-card{border:1px solid #2C2A26;border-radius:3px;page-break-inside:avoid;break-inside:avoid;display:flex;flex-direction:column;overflow:hidden}
   .p-card-head{background:#2C2A26;color:#fff;padding:4px 7px;flex-shrink:0}
   .p-card-name{font-size:11px;font-weight:700}
@@ -1108,13 +1110,28 @@ function printLines() {
   }).join('');
 
   const now=new Date();
-  document.getElementById('printArea').innerHTML=`
-    <div class="p-header">
-      <h2>回線管理シート</h2>
-      <div class="p-date">${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日印刷　□チェック済み ■未チェック</div>
-    </div>
-    <div class="p-cards">${cards}</div>
-    <div class="p-footer">⚠ この印刷物からアプリへのデータ復元はできません。バックアップにはアプリの「CSV出力」を使用してください。</div>`;
+  const dateStr=`${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日印刷`;
+  const cardArr=cards.split('</div>\n    </div>').map((c,i,a)=>i<a.length-1?c+'</div>\n    </div>':c);
+
+  // 4件ごとにページ分割
+  const allCards=sortedLines().map((_,i)=>i);
+  const cardList=document.createElement('div');
+  cardList.innerHTML=cards;
+  const cardEls=Array.from(cardList.children);
+  const pages=[];
+  for (let i=0;i<cardEls.length;i+=4) {
+    pages.push(cardEls.slice(i,i+4).map(el=>el.outerHTML).join(''));
+  }
+
+  const header=`<div class="p-header"><h2>回線管理シート</h2><div class="p-date">${dateStr}　□未チェック ■解約・受取済み</div></div>`;
+  const footer=`<div class="p-footer">⚠ この印刷物からアプリへのデータ復元はできません。バックアップにはアプリの「CSV出力」を使用してください。</div>`;
+
+  document.getElementById('printArea').innerHTML=pages.map((pageCards,i)=>`
+    <div class="p-page">
+      ${header}
+      <div class="p-cards">${pageCards}</div>
+      ${i===pages.length-1?footer:''}
+    </div>`).join('');
   window.print();
 }
 

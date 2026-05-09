@@ -325,6 +325,12 @@ td.cell-actions{padding-right:14px}
         </div>
       </div>
 
+      <!-- 未受取CBバナー -->
+      <div id="unclaimedBanner" style="display:none;background:var(--status-warning-bg);border:.5px solid var(--status-warning-text);border-radius:8px;padding:10px 16px;margin-bottom:16px;font-size:12px;color:var(--status-warning-text);display:flex;align-items:center;gap:8px">
+        <i class="ti ti-alert-triangle" style="font-size:15px;flex-shrink:0"></i>
+        <span id="unclaimedBannerText"></span>
+      </div>
+
       <!-- ツールバー -->
       <div class="toolbar">
         <div class="sort-group">
@@ -583,6 +589,15 @@ function grantPeriodToDate(ym, period, specificDate) {
   const day={early:1,mid:11,late:21}[period]||21;
   return `${y}-${String(m).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
 }
+function grantPeriodSecondDate(ym, period) {
+  if (!ym || period==='specific') return null;
+  const [y,m]=ym.split('-').map(Number);
+  if (!y||!m) return null;
+  const lastDay=new Date(y,m,0).getDate();
+  const day={early:10, mid:20, late:lastDay}[period]||null;
+  if (!day) return null;
+  return `${y}-${String(m).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+}
 function grantPeriodLabel(ym, period, specificDate) {
   if (!ym) return null;
   const [y,m]=ym.split('-').map(Number);
@@ -590,6 +605,18 @@ function grantPeriodLabel(ym, period, specificDate) {
   if (period==='specific') return specificDate ? fmtDate(specificDate) : null;
   const lbl={early:'上旬',mid:'中旬',late:'下旬'};
   return `${y}年${m}月${lbl[period]||''}`;
+}
+function countUnclaimedCB() {
+  let count=0;
+  lines.forEach(line=>{
+    (line.campaigns||[]).forEach(c=>{
+      if (c.name && !c.granted && c.grantYM) {
+        const d=grantPeriodToDate(c.grantYM,c.grantPeriod,c.grantSpecificDate);
+        if (d && daysUntil(d)<0) count++;
+      }
+    });
+  });
+  return count;
 }
 
 // ── Google Calendar URL ─────────────────────────
@@ -686,6 +713,17 @@ function renderTable() {
   document.getElementById('cnt-warning').innerHTML =`${counts.warning}<span>件</span>`;
   document.getElementById('cnt-safe').innerHTML    =`${counts.safe}<span>件</span>`;
   document.getElementById('cnt-none').innerHTML    =`${counts.none}<span>件</span>`;
+  const unclaimed=countUnclaimedCB();
+  const banner=document.getElementById('unclaimedBanner');
+  const bannerText=document.getElementById('unclaimedBannerText');
+  if (banner) {
+    if (unclaimed>0) {
+      banner.style.display='flex';
+      bannerText.textContent=`受取期限を過ぎたキャンペーンが ${unclaimed}件 あります。受け取り確認後「受取済み」にチェックを入れてください。`;
+    } else {
+      banner.style.display='none';
+    }
+  }
 
   const tbody=document.getElementById('tableBody');
   const empty=document.getElementById('emptyState');
@@ -755,7 +793,8 @@ function updateOptCal(i) {
 
 function buildCampaignList(camps) {
   document.getElementById('campaignList').innerHTML=camps.map((c,i)=>{
-    const calUrl=c.grantYM?buildCampCalURL(c.name,c.grantYM,c.grantPeriod,c.grantSpecificDate):'#';
+    const calUrl =c.grantYM?buildCampCalURL(c.name,c.grantYM,c.grantPeriod,c.grantSpecificDate):'#';
+    const calUrl2=c.grantYM?buildCampCal2URL(c.name,c.grantYM,c.grantPeriod):'#';
     return `<div class="campaign-block">
       <div class="campaign-block-header">
         <div class="campaign-num">キャンペーン ${i+1}</div>
@@ -784,9 +823,12 @@ function buildCampaignList(camps) {
           <input class="form-input" type="date" id="camp${i}_specificDate" value="${esc(c.grantSpecificDate)}" oninput="updateCampCal(${i})"></div>
         <div class="form-group"><label class="form-label">金額</label>
           <input class="form-input" type="text" id="camp${i}_amount" placeholder="例：10,000円" value="${esc(c.amount)}" maxlength="20"></div>
-        <div style="display:flex;align-items:flex-end;padding-bottom:0" id="campCalGrp${i}" style="${c.grantPeriod==='specific'?'display:none':''}">
+        <div style="display:flex;align-items:flex-end;gap:6px;padding-bottom:0;flex-wrap:wrap" id="campCalGrp${i}" style="${c.grantPeriod==='specific'?'display:none':''}">
           <a class="cal-link-text ${c.grantYM?'':'disabled'}" id="campCal${i}" href="${calUrl}" target="_blank" rel="noopener" style="margin-bottom:0">
-            <i class="ti ti-calendar-plus"></i> カレンダー追加
+            <i class="ti ti-calendar-plus"></i> ${calBtn1Label(c.grantPeriod)}
+          </a>
+          <a class="cal-link-text ${c.grantYM&&c.grantPeriod!=='specific'?'':'disabled'}" id="campCal2_${i}" href="${calUrl2}" target="_blank" rel="noopener" style="margin-bottom:0">
+            <i class="ti ti-calendar-plus"></i> ${calBtn2Label(c.grantPeriod)}
           </a>
         </div>
       </div>
@@ -798,7 +840,19 @@ function buildCampCalURL(name, ym, period, specificDate) {
   const dateStr=grantPeriodToDate(ym, period, specificDate);
   const label=grantPeriodLabel(ym, period, specificDate);
   if (!dateStr) return '#';
-  return gcalURL(`CB付与確認：${name}`, dateStr, `${label||''}頃にポイント・キャッシュバック付与予定`);
+  return gcalURL(`CB付与確認①：${name}`, dateStr, `${label||''}頃にポイント・キャッシュバック付与予定`);
+}
+function buildCampCal2URL(name, ym, period) {
+  const dateStr=grantPeriodSecondDate(ym, period);
+  const label=grantPeriodLabel(ym, period, '');
+  if (!dateStr) return '#';
+  return gcalURL(`CB付与確認②（最終）：${name}`, dateStr, `${label||''}の最終確認日です。受け取れていれば「受取済み」にチェックを入れてください。`);
+}
+function calBtn1Label(period) {
+  return {early:'1日通知',mid:'11日通知',late:'21日通知',specific:'カレンダー追加'}[period]||'カレンダー追加';
+}
+function calBtn2Label(period) {
+  return {early:'10日（最終）',mid:'20日（最終）',late:'月末（最終）'}[period]||'';
 }
 
 function onPeriodChange(i) {
@@ -814,9 +868,16 @@ function updateCampCal(i) {
   const sd    =document.getElementById(`camp${i}_specificDate`)?.value||'';
   const name  =document.getElementById(`camp${i}_name`)?.value||'';
   const btn   =document.getElementById(`campCal${i}`);
-  if (!btn) return;
-  if (ym) { btn.href=buildCampCalURL(name,ym,period,sd); btn.classList.remove('disabled'); }
-  else { btn.href='#'; btn.classList.add('disabled'); }
+  const btn2  =document.getElementById(`campCal2_${i}`);
+  if (btn) {
+    if (ym) { btn.href=buildCampCalURL(name,ym,period,sd); btn.classList.remove('disabled'); }
+    else { btn.href='#'; btn.classList.add('disabled'); }
+  }
+  if (btn2) {
+    const url2=ym&&period!=='specific'?buildCampCal2URL(name,ym,period):'#';
+    btn2.href=url2;
+    btn2.classList.toggle('disabled', !ym||period==='specific');
+  }
 }
 
 // ── 維持期間計算 ────────────────────────────────

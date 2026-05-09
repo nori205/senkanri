@@ -1111,16 +1111,23 @@ function printLines() {
 
   const now=new Date();
   const dateStr=`${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日印刷`;
-  const cardArr=cards.split('</div>\n    </div>').map((c,i,a)=>i<a.length-1?c+'</div>\n    </div>':c);
 
-  // 4件ごとにページ分割
-  const allCards=sortedLines().map((_,i)=>i);
+  // カードをDOM要素に変換
   const cardList=document.createElement('div');
   cardList.innerHTML=cards;
   const cardEls=Array.from(cardList.children);
+
+  // 4件ずつページ分割
   const pages=[];
   for (let i=0;i<cardEls.length;i+=4) {
-    pages.push(cardEls.slice(i,i+4).map(el=>el.outerHTML).join(''));
+    pages.push(cardEls.slice(i,i+4));
+  }
+
+  // ページ内件数に応じたグリッドスタイル
+  function pageGridStyle(count) {
+    if (count===1) return 'grid-template-columns:1fr;grid-template-rows:1fr';
+    if (count===2) return 'grid-template-columns:1fr 1fr;grid-template-rows:1fr';
+    return 'grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr';
   }
 
   const header=`<div class="p-header"><h2>回線管理シート</h2><div class="p-date">${dateStr}　□未チェック ■解約・受取済み</div></div>`;
@@ -1129,7 +1136,9 @@ function printLines() {
   document.getElementById('printArea').innerHTML=pages.map((pageCards,i)=>`
     <div class="p-page">
       ${header}
-      <div class="p-cards">${pageCards}</div>
+      <div class="p-cards" style="${pageGridStyle(pageCards.length)}">
+        ${pageCards.map(el=>el.outerHTML).join('')}
+      </div>
       ${i===pages.length-1?footer:''}
     </div>`).join('');
   window.print();

@@ -235,24 +235,24 @@ td.cell-actions{padding-right:14px}
   .p-header{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #2C2A26;padding-bottom:3px;margin-bottom:4px}
   .p-header h2{font-size:13px;font-weight:700;margin:0}
   .p-date{font-size:7.5px;color:#555}
-  .p-cards{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:4mm;height:calc(277mm - 14mm)}
+  .p-cards{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr 1fr;gap:3mm;height:calc(277mm - 14mm)}
   .p-card{border:1px solid #2C2A26;border-radius:3px;page-break-inside:avoid;break-inside:avoid;display:flex;flex-direction:column;overflow:hidden}
-  .p-card-head{background:#2C2A26;color:#fff;padding:4px 7px;flex-shrink:0}
-  .p-card-name{font-size:11px;font-weight:700}
-  .p-card-sub{font-size:8px;opacity:.8;margin-top:1px}
-  .p-card-body{padding:5px 7px;flex:1;display:flex;flex-direction:column}
-  .p-section{margin-bottom:4px}
-  .p-section-label{font-size:7.5px;font-weight:700;color:#555;letter-spacing:.04em;border-bottom:.5px solid #ddd;padding-bottom:1px;margin-bottom:2px}
-  .p-row{display:flex;align-items:baseline;gap:5px;margin-bottom:1px;font-size:8.5px}
-  .p-row-label{color:#555;white-space:nowrap;min-width:75px;flex-shrink:0}
+  .p-card-head{background:#2C2A26;color:#fff;padding:3px 6px;flex-shrink:0}
+  .p-card-name{font-size:10px;font-weight:700}
+  .p-card-sub{font-size:7.5px;opacity:.8;margin-top:1px}
+  .p-card-body{padding:4px 6px;flex:1;display:flex;flex-direction:column}
+  .p-section{margin-bottom:3px}
+  .p-section-label{font-size:7px;font-weight:700;color:#555;letter-spacing:.04em;border-bottom:.5px solid #ddd;padding-bottom:1px;margin-bottom:2px}
+  .p-row{display:flex;align-items:baseline;gap:4px;margin-bottom:1px;font-size:8px}
+  .p-row-label{color:#555;white-space:nowrap;min-width:70px;flex-shrink:0}
   .p-row-value{font-weight:500}
   .p-warn{color:#A23B2C;font-weight:700}
   .p-caution{color:#8B5E1F;font-weight:700}
-  .p-check{display:inline-block;width:9px;height:9px;border:1px solid #999;border-radius:1px;margin-right:3px;vertical-align:middle;flex-shrink:0}
+  .p-check{display:inline-block;width:8px;height:8px;border:1px solid #999;border-radius:1px;margin-right:3px;vertical-align:middle;flex-shrink:0}
   .p-check.done{background:#2C2A26;border-color:#2C2A26}
-  .p-memo{margin-top:auto;border-top:.5px solid #ddd;padding-top:3px}
-  .p-memo-label{font-size:7.5px;color:#555;margin-bottom:2px}
-  .p-memo-line{border-bottom:.5px solid #ccc;height:13px;margin-bottom:2px}
+  .p-memo{margin-top:auto;border-top:.5px solid #ddd;padding-top:2px}
+  .p-memo-label{font-size:7px;color:#555;margin-bottom:2px}
+  .p-memo-line{border-bottom:.5px solid #ccc;height:11px;margin-bottom:2px}
   .p-footer{font-size:7px;color:#888;border-top:.5px solid #ccc;padding-top:3px;margin-top:3mm}
 }
 
@@ -1247,6 +1247,44 @@ function insertTestData() {
         {name:'',contact:'',grantYM:'',grantPeriod:'late',grantSpecificDate:'',amount:'',granted:false},
       ],
       memo:'トッピング期限に注意。毎月確認必要。',
+    },
+    {
+      id: now+5, carrier:'ymobile', nickname:'妻', name:'Y!mobile（妻）', phone:'080-9999-0001',
+      contractor:'山田太郎', user:'山田花子', contractDate:'2025-12-01', returnDate:'2026-11-30',
+      optionDeadlines:[
+        {name:'スーパーだれとでも定額',date:'2026-08-01',cancelled:false},
+        {name:'故障安心パック',date:'2026-10-31',cancelled:false},
+        {name:'',date:'',cancelled:false},
+        {name:'',date:'',cancelled:false},
+        {name:'',date:'',cancelled:false},
+      ],
+      maintDays:'240',
+      campaigns:[
+        {name:'ワイモバイル乗り換え特典',contact:'080-9999-0001',grantYM:'2026-08',grantPeriod:'late',grantSpecificDate:'',amount:'15,000円',granted:false},
+        {name:'PayPayボーナス',contact:'hanako@yahoo.jp',grantYM:'2026-07',grantPeriod:'mid',grantSpecificDate:'',amount:'5,000pt',granted:false},
+        {name:'',contact:'',grantYM:'',grantPeriod:'late',grantSpecificDate:'',amount:'',granted:false},
+        {name:'',contact:'',grantYM:'',grantPeriod:'late',grantSpecificDate:'',amount:'',granted:false},
+      ],
+      memo:'',
+    },
+    {
+      id: now+6, carrier:'uq', nickname:'', name:'UQモバイル', phone:'070-2222-3333',
+      contractor:'佐藤三郎', user:'佐藤三郎', contractDate:'2026-03-15', returnDate:'',
+      optionDeadlines:[
+        {name:'通話放題',date:'2026-09-14',cancelled:false},
+        {name:'コンテンツパック',date:'2026-12-31',cancelled:false},
+        {name:'',date:'',cancelled:false},
+        {name:'',date:'',cancelled:false},
+        {name:'',date:'',cancelled:false},
+      ],
+      maintDays:'180',
+      campaigns:[
+        {name:'UQ乗り換え還元',contact:'070-2222-3333',grantYM:'2026-06',grantPeriod:'late',grantSpecificDate:'',amount:'10,000円',granted:false},
+        {name:'au PAY還元',contact:'saburo@au.com',grantYM:'2026-07',grantPeriod:'early',grantSpecificDate:'',amount:'2,000pt',granted:false},
+        {name:'',contact:'',grantYM:'',grantPeriod:'late',grantSpecificDate:'',amount:'',granted:false},
+        {name:'',contact:'',grantYM:'',grantPeriod:'late',grantSpecificDate:'',amount:'',granted:false},
+      ],
+      memo:'au回線から移行。元の番号そのまま使用中。',
     },
   ];
   lines = [...lines, ...testLines];

@@ -359,6 +359,7 @@ td.cell-actions{padding-right:14px}
           </label>
           <button class="btn-outline" onclick="exportCSV()"><i class="ti ti-download"></i> CSV出力</button>
           <button class="btn-outline" onclick="printLines()"><i class="ti ti-printer"></i> 印刷</button>
+          <button class="btn-outline" onclick="insertTestData()" style="color:var(--status-warning-text);border-color:var(--status-warning-text)" title="印刷テスト用ダミーデータを4件追加"><i class="ti ti-flask"></i> テスト</button>
         </div>
       </div>
 
@@ -1164,6 +1165,94 @@ function migrateFromV1() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(migrated));
     console.log(`v1から${migrated.length}件移行しました`);
   } catch(e) { console.error('v1移行失敗', e); }
+}
+
+// ── テストデータ ─────────────────────────────────
+function insertTestData() {
+  if (!confirm('印刷テスト用に4回線のダミーデータを追加します。\nテスト後は手動で削除してください。')) return;
+  const now = Date.now();
+  const testLines = [
+    {
+      id: now+1, carrier:'au', nickname:'', name:'au', phone:'090-1111-2222',
+      contractor:'山田太郎', user:'山田花子', contractDate:'2025-10-01', returnDate:'2026-06-30',
+      optionDeadlines:[
+        {name:'5G通話オプション',date:'2026-06-15',cancelled:false},
+        {name:'データ増量オプション',date:'2026-07-01',cancelled:true},
+        {name:'機器補償サービス',date:'2026-08-31',cancelled:false},
+        {name:'かけ放題オプション',date:'2026-09-01',cancelled:false},
+        {name:'留守電オプション',date:'',cancelled:false},
+      ],
+      maintDays:'180',
+      campaigns:[
+        {name:'乗り換えキャッシュバック',contact:'090-1111-2222',grantYM:'2026-07',grantPeriod:'late',grantSpecificDate:'',amount:'20,000円',granted:false},
+        {name:'端末割引キャンペーン',contact:'taro@example.com',grantYM:'2026-06',grantPeriod:'mid',grantSpecificDate:'',amount:'10,000円',granted:true},
+        {name:'紹介キャンペーン',contact:'090-1111-2222',grantYM:'2026-08',grantPeriod:'early',grantSpecificDate:'',amount:'3,000円',granted:false},
+        {name:'春の特典ポイント',contact:'',grantYM:'2026-05',grantPeriod:'specific',grantSpecificDate:'2026-05-31',amount:'1,000pt',granted:false},
+      ],
+      memo:'MNP予定あり。SIMカードは手元に保管中。',
+    },
+    {
+      id: now+2, carrier:'rakuten', nickname:'', name:'楽天モバイル', phone:'080-3333-4444',
+      contractor:'鈴木次郎', user:'鈴木次郎', contractDate:'2026-01-15', returnDate:'',
+      optionDeadlines:[
+        {name:'最強家族プログラム',date:'2026-07-14',cancelled:false},
+        {name:'楽天市場コース',date:'2026-09-30',cancelled:false},
+        {name:'通話かけ放題',date:'2026-12-31',cancelled:false},
+        {name:'データ追加オプション',date:'',cancelled:false},
+        {name:'',date:'',cancelled:false},
+      ],
+      maintDays:'150',
+      campaigns:[
+        {name:'初めて申込特典',contact:'080-3333-4444',grantYM:'2026-06',grantPeriod:'late',grantSpecificDate:'',amount:'6,000pt',granted:false},
+        {name:'Rakuten最強プログラム',contact:'jiro@rakuten.jp',grantYM:'2026-07',grantPeriod:'mid',grantSpecificDate:'',amount:'3,000pt',granted:false},
+        {name:'',contact:'',grantYM:'',grantPeriod:'late',grantSpecificDate:'',amount:'',granted:false},
+        {name:'',contact:'',grantYM:'',grantPeriod:'late',grantSpecificDate:'',amount:'',granted:false},
+      ],
+      memo:'',
+    },
+    {
+      id: now+3, carrier:'docomo', nickname:'子供', name:'docomo（子供）', phone:'070-5555-6666',
+      contractor:'山田太郎', user:'山田一郎', contractDate:'2025-08-20', returnDate:'2026-08-19',
+      optionDeadlines:[
+        {name:'dオプション月額',date:'2026-06-05',cancelled:false},
+        {name:'端末補償オプション',date:'2026-07-20',cancelled:false},
+        {name:'ドコモ光セット割',date:'2027-03-31',cancelled:false},
+        {name:'留守電プラス',date:'2026-10-01',cancelled:true},
+        {name:'eximo向けオプション',date:'2026-11-30',cancelled:false},
+      ],
+      maintDays:'120',
+      campaigns:[
+        {name:'5G WELCOME割',contact:'070-5555-6666',grantYM:'2026-07',grantPeriod:'early',grantSpecificDate:'',amount:'22,000円',granted:false},
+        {name:'dカード特典',contact:'ichiro@docomo.ne.jp',grantYM:'2026-08',grantPeriod:'late',grantSpecificDate:'',amount:'5,000pt',granted:false},
+        {name:'家族割キャンペーン',contact:'070-5555-6666',grantYM:'2026-06',grantPeriod:'mid',grantSpecificDate:'',amount:'2,000pt',granted:true},
+        {name:'端末下取り特典',contact:'',grantYM:'2026-09',grantPeriod:'late',grantSpecificDate:'',amount:'15,000円',granted:false},
+      ],
+      memo:'端末返却期日に注意。箱・付属品を保管しておくこと。',
+    },
+    {
+      id: now+4, carrier:'povo', nickname:'', name:'povo', phone:'090-7777-8888',
+      contractor:'佐藤三郎', user:'佐藤三郎', contractDate:'2026-02-01', returnDate:'',
+      optionDeadlines:[
+        {name:'データ使い放題24時間',date:'2026-06-10',cancelled:false},
+        {name:'smash.使い放題',date:'2026-07-31',cancelled:false},
+        {name:'',date:'',cancelled:false},
+        {name:'',date:'',cancelled:false},
+        {name:'',date:'',cancelled:false},
+      ],
+      maintDays:'90',
+      campaigns:[
+        {name:'povo乗り換えトッピング',contact:'090-7777-8888',grantYM:'2026-05',grantPeriod:'late',grantSpecificDate:'',amount:'3,000pt',granted:false},
+        {name:'紹介プログラム',contact:'saburo@gmail.com',grantYM:'2026-06',grantPeriod:'early',grantSpecificDate:'',amount:'1,500pt',granted:false},
+        {name:'',contact:'',grantYM:'',grantPeriod:'late',grantSpecificDate:'',amount:'',granted:false},
+        {name:'',contact:'',grantYM:'',grantPeriod:'late',grantSpecificDate:'',amount:'',granted:false},
+      ],
+      memo:'トッピング期限に注意。毎月確認必要。',
+    },
+  ];
+  lines = [...lines, ...testLines];
+  save();
+  renderTable();
+  alert('4件追加しました。印刷で確認後、不要なら削除してください。');
 }
 
 // ── SW登録 ──────────────────────────────────────

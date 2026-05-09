@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>回線管理</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#2C2A26">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="回線管理">
+<link rel="apple-touch-icon" href="icon.svg">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<style>
+:root {
+  --bg-page:    #FAF8F4;
+  --bg-surface: #FFFFFF;
+  --bg-subtle:  #F5F2EC;
+  --bg-hover:   #F0EDE6;
+  --border-default: #E8E3D6;
+  --border-strong:  #D8D3C7;
+  --text-primary:   #2C2A26;
+  --text-secondary: #6B665C;
+  --text-muted:     #8A8478;
+  --status-urgent-bg:    #F5E6E2;
+  --status-urgent-text:  #A23B2C;
+  --status-warning-bg:   #F5EBD8;
+  --status-warning-text: #8B5E1F;
+  --status-safe-bg:      #E8EDE5;
+  --status-safe-text:    #4A6B47;
+  --status-neutral-bg:   #EFEADE;
+  --status-neutral-text: #6B665C;
+  --accent:      #2C2A26;
+  --accent-text: #FAF8F4;
+  --sidebar-w:   56px;
+  --header-h:    60px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;background:var(--bg-page);color:var(--text-primary);min-height:100vh;font-size:14px;line-height:1.6}
+
+/* ── レイアウト ── */
+.layout{display:flex;min-height:100vh}
+
+/* ── サイドバー ── */
+.sidebar{width:var(--sidebar-w);background:var(--bg-subtle);border-right:1px solid var(--border-default);position:fixed;top:0;left:0;height:100vh;display:flex;flex-direction:column;align-items:center;padding:12px 0;z-index:100;gap:4px}
+.sidebar-logo{width:36px;height:36px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:"Hiragino Mincho ProN","Yu Mincho",serif;color:var(--accent-text);font-size:16px;font-weight:500;margin-bottom:12px;flex-shrink:0}
+.sidebar-nav{display:flex;flex-direction:column;align-items:center;gap:4px;width:100%}
+.nav-item{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted);transition:background 50ms,color 50ms;border:none;background:transparent;font-size:18px}
+.nav-item.active{background:var(--bg-hover);color:var(--text-primary)}
+.nav-item:hover:not(.disabled){background:var(--bg-hover);color:var(--text-primary)}
+.nav-item:active:not(.disabled){transform:scale(0.98)}
+.nav-item.disabled{opacity:0.35;cursor:default}
+
+/* ── メイン ── */
+.main-wrap{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100vh}
+
+/* ── ヘッダー ── */
+.header{height:var(--header-h);background:var(--bg-subtle);border-bottom:1px solid var(--border-default);display:flex;align-items:center;justify-content:space-between;padding:0 20px;position:sticky;top:0;z-index:90}
+.header-left{display:flex;flex-direction:column;gap:1px}
+.header-breadcrumb{font-size:13px;font-weight:500;color:var(--text-primary)}
+.header-breadcrumb span{color:var(--text-muted);font-weight:400}
+.header-updated{font-size:11px;color:var(--text-muted)}
+.header-right{display:flex;align-items:center;gap:10px}
+.search-box{display:flex;align-items:center;gap:6px;border:1px solid var(--border-default);border-radius:6px;padding:0 10px;height:32px;width:180px;background:var(--bg-surface);transition:border-color 150ms}
+.search-box:focus-within{border-color:var(--border-strong);box-shadow:0 0 0 2px rgba(44,42,38,.08)}
+.search-box i{font-size:13px;color:var(--text-muted);flex-shrink:0}
+.search-box input{border:none;outline:none;background:transparent;font-size:12px;color:var(--text-primary);width:100%;font-family:inherit}
+.search-box input::placeholder{color:var(--text-muted)}
+.btn-primary{height:32px;padding:0 14px;background:var(--accent);color:var(--accent-text);border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap;transition:opacity 50ms;font-family:inherit}
+.btn-primary:hover{opacity:.85}
+.btn-primary:active{transform:scale(0.98)}
+
+/* ── コンテンツ ── */
+.content{padding:20px;flex:1}
+
+/* ── メトリックカード ── */
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.metric-card{background:var(--bg-surface);border:.5px solid var(--border-default);border-radius:10px;padding:14px}
+.metric-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.metric-label{font-size:11px;color:var(--text-muted)}
+.metric-badge{font-size:10px;padding:1px 6px;border-radius:3px;font-weight:500}
+.badge-urgent{background:var(--status-urgent-bg);color:var(--status-urgent-text)}
+.badge-warning{background:var(--status-warning-bg);color:var(--status-warning-text)}
+.metric-count{font-size:22px;font-weight:500;color:var(--text-primary);font-variant-numeric:tabular-nums}
+.metric-count span{font-size:11px;color:var(--text-muted);font-weight:400;margin-left:2px}
+
+/* ── ツールバー ── */
+.toolbar{display:flex;align-items:center;justify-content:space-between;padding:16px 0}
+.sort-group{display:flex;background:var(--bg-subtle);border:1px solid var(--border-default);border-radius:6px;overflow:hidden}
+.sort-btn{padding:0 12px;height:28px;font-size:11px;color:var(--text-secondary);background:transparent;border:none;cursor:pointer;font-family:inherit;transition:background 50ms,color 50ms;white-space:nowrap}
+.sort-btn.active{background:var(--bg-surface);color:var(--text-primary);font-weight:500;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.sort-btn:hover:not(.active){background:var(--bg-hover)}
+.toolbar-right{display:flex;gap:6px}
+.btn-outline{height:28px;padding:0 10px;border:1px solid var(--border-default);border-radius:5px;background:var(--bg-surface);color:var(--text-secondary);font-size:11px;cursor:pointer;display:flex;align-items:center;gap:4px;font-family:inherit;transition:background 50ms;white-space:nowrap;text-decoration:none}
+.btn-outline:hover{background:var(--bg-hover)}
+.btn-outline:active{transform:scale(0.98)}
+.btn-outline i{font-size:12px}
+
+/* ── テーブル ── */
+.table-wrap{background:var(--bg-surface);border:.5px solid var(--border-default);border-radius:10px;overflow:hidden}
+table{width:100%;border-collapse:collapse}
+thead tr{background:var(--bg-subtle);border-bottom:.5px solid var(--border-default)}
+th{padding:8px;font-size:10px;font-weight:500;color:var(--text-muted);letter-spacing:.05em;text-align:left}
+th:first-child{width:28px;padding-left:14px}
+th.col-actions{text-align:right;padding-right:14px;width:90px}
+th.col-user{width:70px}
+th.col-deadline{width:150px}
+th.col-days{width:80px}
+tbody tr{border-bottom:.5px solid #F0F0F0;transition:background 80ms}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:var(--bg-hover)}
+td{padding:12px 8px;vertical-align:middle}
+td:first-child{padding-left:14px}
+td.cell-actions{padding-right:14px}
+
+/* ステータスドット */
+.status-dot{width:6px;height:6px;border-radius:50%}
+.dot-urgent{background:var(--status-urgent-text)}
+.dot-warning{background:var(--status-warning-text)}
+.dot-safe{background:var(--status-safe-text)}
+.dot-neutral{background:var(--border-strong)}
+
+/* 回線名セル */
+.name-cell-inner{display:flex;align-items:stretch;gap:10px}
+.carrier-bar{width:3px;border-radius:2px;flex-shrink:0;align-self:stretch}
+.carrier-rakuten{background:#8B3333}
+.carrier-docomo{background:#8B3A4F}
+.carrier-ahamo{background:#3A6B8B}
+.carrier-au{background:#996633}
+.carrier-uq{background:#7A6B33}
+.carrier-povo{background:#B07A30}
+.carrier-softbank{background:#2E6B8C}
+.carrier-ymobile{background:#3A7A8B}
+.carrier-linemo{background:#4A8B6B}
+.carrier-other{background:#888}
+.carrier-none{background:var(--border-default)}
+.name-cell-text{display:flex;flex-direction:column;justify-content:center}
+.line-name{font-size:13px;font-weight:500;color:var(--text-primary)}
+.line-phone{font-size:11px;color:var(--text-muted)}
+
+/* 期限セル */
+.deadline-kind{font-size:11px;color:var(--text-secondary)}
+.deadline-date{font-size:11px;color:var(--text-muted)}
+
+/* 残り日数 */
+.days-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:500;font-variant-numeric:tabular-nums}
+.days-urgent{background:var(--status-urgent-bg);color:var(--status-urgent-text)}
+.days-warning{background:var(--status-warning-bg);color:var(--status-warning-text)}
+.days-safe{background:var(--status-safe-bg);color:var(--status-safe-text)}
+.days-neutral{background:var(--status-neutral-bg);color:var(--status-neutral-text)}
+
+/* 操作 */
+.action-cell{display:flex;justify-content:flex-end;gap:4px}
+.icon-btn{width:26px;height:26px;border:1px solid var(--border-default);border-radius:4px;background:var(--bg-surface);color:var(--text-secondary);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:background 50ms,color 50ms}
+.icon-btn:hover{background:var(--bg-hover);color:var(--text-primary)}
+.icon-btn:active{transform:scale(0.98)}
+
+/* ── 空状態 ── */
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;text-align:center}
+.empty-icon{font-size:32px;color:var(--text-muted);margin-bottom:16px}
+.empty-title{font-size:14px;color:var(--text-primary);margin-bottom:6px}
+.empty-desc{font-size:12px;color:var(--text-muted);line-height:1.7;margin-bottom:20px}
+
+/* ── モーダル ── */
+.overlay{display:none;position:fixed;inset:0;background:rgba(44,42,38,.4);z-index:200;align-items:center;justify-content:center;padding:20px}
+.overlay.open{display:flex}
+.modal{background:var(--bg-surface);border-radius:12px;width:100%;max-width:540px;max-height:90vh;overflow-y:auto;box-shadow:0 8px 40px rgba(44,42,38,.2);opacity:0;transform:translateY(8px);transition:opacity 150ms,transform 150ms}
+.overlay.open .modal{opacity:1;transform:translateY(0)}
+.modal-header{padding:18px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border-default);position:sticky;top:0;background:var(--bg-surface);z-index:1}
+.modal-title{font-size:14px;font-weight:500;color:var(--text-primary)}
+.modal-close{width:28px;height:28px;border:none;background:transparent;color:var(--text-muted);cursor:pointer;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:16px;transition:background 50ms}
+.modal-close:hover{background:var(--bg-hover)}
+.modal-body{padding:20px}
+.modal-footer{padding:14px 20px;border-top:1px solid var(--border-default);display:flex;align-items:center;justify-content:flex-end;gap:10px;position:sticky;bottom:0;background:var(--bg-surface)}
+
+/* フォーム */
+.form-section{margin-bottom:22px}
+.section-label{font-size:12px;font-weight:500;color:var(--text-muted);margin-bottom:12px;padding-bottom:7px;border-bottom:1px solid var(--border-default)}
+.form-row{display:grid;gap:10px;margin-bottom:12px}
+.form-row:last-child{margin-bottom:0}
+.col2{grid-template-columns:1fr 1fr}
+.col3{grid-template-columns:1fr 1fr 1fr}
+.form-group{display:flex;flex-direction:column;gap:4px}
+.form-label{font-size:11px;color:var(--text-muted)}
+.form-input,.form-select,.form-textarea{height:36px;border:.5px solid var(--border-default);border-radius:6px;padding:0 10px;font-size:13px;font-family:inherit;color:var(--text-primary);background:var(--bg-surface);outline:none;transition:border-color 150ms,box-shadow 150ms;-webkit-appearance:none}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--border-strong);box-shadow:0 0 0 2px rgba(44,42,38,.1)}
+.form-input.error{border-color:var(--status-urgent-text);box-shadow:0 0 0 2px rgba(162,59,44,.12)}
+.form-textarea{height:auto;min-height:68px;padding:8px 10px;resize:vertical;line-height:1.5}
+.form-select{cursor:pointer}
+
+/* オプション行 */
+.option-list{display:flex;flex-direction:column;gap:8px;margin-bottom:4px}
+.option-row{display:flex;align-items:center;gap:7px}
+.option-num{font-size:11px;color:var(--text-muted);width:14px;flex-shrink:0;text-align:center}
+.option-row .form-input{flex:1;min-width:0}
+.option-row .date-input{width:138px;flex:none}
+.check-label{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text-muted);cursor:pointer;flex-shrink:0;white-space:nowrap;user-select:none}
+.check-label input[type=checkbox]{accent-color:var(--accent);cursor:pointer}
+.cal-link{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border:1px solid var(--border-default);border-radius:4px;background:var(--bg-surface);color:var(--text-muted);cursor:pointer;font-size:13px;flex-shrink:0;transition:background 50ms,color 50ms;text-decoration:none}
+.cal-link:hover{background:var(--bg-hover);color:var(--text-primary)}
+.cal-link.disabled{opacity:.35;pointer-events:none}
+
+/* キャンペーンブロック */
+.campaign-block{border:.5px solid var(--border-default);border-radius:8px;padding:12px;margin-bottom:10px}
+.campaign-block:last-child{margin-bottom:0}
+.campaign-block-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.campaign-num{font-size:11px;color:var(--text-muted);font-weight:500}
+
+/* 維持期間 */
+.unlock-display{background:var(--bg-subtle);border-radius:6px;padding:10px 14px;font-size:12px;color:var(--text-secondary);margin-top:8px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.unlock-date-val{font-size:15px;font-weight:500;color:var(--text-primary)}
+.cal-link-text{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--text-secondary);text-decoration:none;padding:4px 8px;border:1px solid var(--border-default);border-radius:4px;background:var(--bg-surface);white-space:nowrap;transition:background 50ms}
+.cal-link-text:hover{background:var(--bg-hover)}
+
+/* テキストボタン */
+.btn-text{background:none;border:none;color:var(--text-muted);font-size:13px;cursor:pointer;padding:6px 10px;border-radius:5px;font-family:inherit;transition:background 50ms}
+.btn-text:hover{background:var(--bg-hover)}
+
+/* 削除確認 */
+.confirm-box{background:var(--bg-surface);border-radius:10px;padding:24px 20px;width:100%;max-width:320px;box-shadow:0 8px 40px rgba(44,42,38,.2);opacity:0;transform:translateY(8px);transition:opacity 150ms,transform 150ms}
+.overlay.open .confirm-box{opacity:1;transform:translateY(0)}
+.confirm-title{font-size:14px;font-weight:500;margin-bottom:6px}
+.confirm-desc{font-size:12px;color:var(--text-muted);margin-bottom:20px;line-height:1.6}
+.confirm-name{font-weight:500;color:var(--text-primary)}
+.confirm-actions{display:flex;gap:8px;justify-content:flex-end}
+.btn-danger-text{background:none;border:none;color:var(--status-urgent-text);font-size:13px;font-weight:500;font-family:inherit;cursor:pointer;padding:6px 10px;border-radius:5px;transition:background 50ms}
+.btn-danger-text:hover{background:var(--status-urgent-bg)}
+
+/* ── 印刷 ── */
+#printArea{display:none}
+@media print{
+  body>*:not(#printArea){display:none!important}
+  #printArea{display:block!important;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif;font-size:10px;color:#000;padding:10mm}
+  #printArea h2{font-size:14px;margin-bottom:4px;border-bottom:2px solid #333;padding-bottom:4px}
+  #printArea .print-date{font-size:9px;color:#555;margin-bottom:10px}
+  #printArea table{width:100%;border-collapse:collapse}
+  #printArea th{background:#2C2A26;color:#fff;padding:4px 6px;font-size:9px;white-space:nowrap;text-align:left}
+  #printArea td{padding:4px 6px;border-bottom:.5px solid #ddd;font-size:9px;vertical-align:top}
+  #printArea tr:nth-child(even) td{background:#f8f8f8}
+  .print-warn{color:#A23B2C;font-weight:bold}
+  .print-caution{color:#8B5E1F;font-weight:bold}
+  .print-note{font-size:8px;color:#555;margin-top:10px;border-top:1px solid #ccc;padding-top:6px}
+}
+
+/* ── モバイル ── */
+.mobile-tabbar{display:none}
+@media(max-width:768px){
+  :root{--sidebar-w:0px}
+  .sidebar{display:none}
+  .mobile-tabbar{display:flex;position:fixed;bottom:0;left:0;right:0;height:56px;background:var(--bg-subtle);border-top:1px solid var(--border-default);z-index:100;justify-content:space-around;align-items:center}
+  .main-wrap{margin-left:0;padding-bottom:56px}
+  .metrics{grid-template-columns:repeat(2,1fr)}
+  .search-box{display:none}
+  .header-updated{display:none}
+  .table-wrap{background:transparent;border:none;border-radius:0}
+  table,thead,tbody,th,td,tr{display:block}
+  thead{display:none}
+  tbody tr{background:var(--bg-surface);border:.5px solid var(--border-default);border-radius:8px;margin-bottom:10px;padding:12px 14px}
+  tbody tr:hover{background:var(--bg-surface)}
+  td{padding:3px 0;border:none}
+  td:first-child{display:none}
+  td.cell-name{padding:0 0 8px;border-bottom:.5px solid var(--border-default);margin-bottom:6px}
+  td.cell-actions{padding-top:8px;border-top:.5px solid var(--border-default);margin-top:4px}
+  td[data-label]::before{content:attr(data-label);font-size:10px;color:var(--text-muted);display:block;margin-bottom:1px}
+  td.cell-name::before,td.cell-actions::before{content:none}
+  .action-cell{justify-content:flex-start}
+  .form-row.col2,.form-row.col3{grid-template-columns:1fr}
+  .option-row .date-input{width:auto;flex:1}
+}
+@media(max-width:479px){
+  .content{padding:12px}
+  .header{padding:0 12px}
+}
+</style>
+</head>
+<body>
+<div id="printArea"></div>
+
+<div class="layout">
+  <!-- サイドバー -->
+  <nav class="sidebar">
+    <div class="sidebar-logo">回</div>
+    <div class="sidebar-nav">
+      <button class="nav-item active" title="回線一覧"><i class="ti ti-list"></i></button>
+      <button class="nav-item disabled" title="カレンダー（準備中）"><i class="ti ti-calendar"></i></button>
+      <button class="nav-item disabled" title="統計（準備中）"><i class="ti ti-chart-bar"></i></button>
+      <button class="nav-item disabled" title="設定（準備中）"><i class="ti ti-settings"></i></button>
+    </div>
+  </nav>
+
+  <!-- メイン -->
+  <div class="main-wrap">
+    <header class="header">
+      <div class="header-left">
+        <div class="header-breadcrumb">回線管理 <span>/ すべての回線</span></div>
+        <div class="header-updated" id="lastUpdated"></div>
+      </div>
+      <div class="header-right">
+        <div class="search-box">
+          <i class="ti ti-search"></i>
+          <input type="text" placeholder="回線名・番号で検索" id="searchInput" oninput="renderTable()">
+        </div>
+        <button class="btn-primary" onclick="openModal()"><i class="ti ti-plus"></i> 追加</button>
+      </div>
+    </header>
+
+    <div class="content">
+      <!-- メトリックカード -->
+      <div class="metrics">
+        <div class="metric-card">
+          <div class="metric-top"><div class="metric-label">7日以内</div><div class="metric-badge badge-urgent">緊急</div></div>
+          <div class="metric-count" id="cnt-urgent">0<span>件</span></div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-top"><div class="metric-label">30日以内</div><div class="metric-badge badge-warning">注意</div></div>
+          <div class="metric-count" id="cnt-warning">0<span>件</span></div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-top"><div class="metric-label">30日超</div></div>
+          <div class="metric-count" id="cnt-safe">0<span>件</span></div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-top"><div class="metric-label">期限なし</div></div>
+          <div class="metric-count" id="cnt-none">0<span>件</span></div>
+        </div>
+      </div>
+
+      <!-- ツールバー -->
+      <div class="toolbar">
+        <div class="sort-group">
+          <button class="sort-btn active" data-sort="deadline" onclick="setSort(this)">期限近い順</button>
+          <button class="sort-btn" data-sort="name" onclick="setSort(this)">回線名順</button>
+          <button class="sort-btn" data-sort="created" onclick="setSort(this)">登録順</button>
+        </div>
+        <div class="toolbar-right">
+          <label class="btn-outline" style="cursor:pointer">
+            <i class="ti ti-upload"></i> CSV読込
+            <input type="file" accept=".csv" style="display:none" onchange="importCSV(event)">
+          </label>
+          <button class="btn-outline" onclick="exportCSV()"><i class="ti ti-download"></i> CSV出力</button>
+          <button class="btn-outline" onclick="printLines()"><i class="ti ti-printer"></i> 印刷</button>
+        </div>
+      </div>
+
+      <!-- テーブル -->
+      <div class="table-wrap">
+        <table id="mainTable">
+          <thead>
+            <tr>
+              <th></th>
+              <th class="col-name">回線名</th>
+              <th class="col-user">使用者</th>
+              <th class="col-deadline">次の期限</th>
+              <th class="col-days">残り</th>
+              <th class="col-actions">操作</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+        <div class="empty-state" id="emptyState" style="display:none">
+          <div class="empty-icon"><i class="ti ti-device-mobile-off"></i></div>
+          <div class="empty-title">まだ回線が登録されていません</div>
+          <div class="empty-desc">毎月の解約期限やキャンペーン特典<br>をひとまとめに管理しましょう</div>
+          <button class="btn-primary" onclick="openModal()"><i class="ti ti-plus"></i> 最初の回線を追加</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- モバイルタブバー -->
+<div class="mobile-tabbar">
+  <button class="nav-item active"><i class="ti ti-list"></i></button>
+  <button class="nav-item disabled"><i class="ti ti-calendar"></i></button>
+  <button class="nav-item disabled"><i class="ti ti-chart-bar"></i></button>
+  <button class="nav-item disabled"><i class="ti ti-settings"></i></button>
+</div>
+
+<!-- 追加・編集モーダル -->
+<div class="overlay" id="overlay" onclick="handleOverlayClick(event)">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">回線を追加</div>
+      <button class="modal-close" onclick="closeModal()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <!-- 基本情報 -->
+      <div class="form-section">
+        <div class="section-label">基本情報</div>
+        <div class="form-row col2">
+          <div class="form-group">
+            <label class="form-label">キャリア *</label>
+            <select class="form-select" id="f_carrier" required>
+              <option value="">— 選択 —</option>
+              <option value="rakuten">楽天モバイル</option>
+              <option value="docomo">docomo</option>
+              <option value="ahamo">ahamo</option>
+              <option value="au">au</option>
+              <option value="uq">UQモバイル</option>
+              <option value="povo">povo</option>
+              <option value="softbank">SoftBank</option>
+              <option value="ymobile">Y!mobile</option>
+              <option value="linemo">LINEMO</option>
+              <option value="other">その他</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">識別名（任意）</label>
+            <input class="form-input" type="text" id="f_nickname" placeholder="例：妻・メイン・子供" maxlength="20">
+          </div>
+        </div>
+        <div class="form-row col2">
+          <div class="form-group">
+            <label class="form-label">電話番号</label>
+            <input class="form-input" type="tel" id="f_phone" placeholder="090-1234-5678" maxlength="20">
+          </div>
+        </div>
+        <div class="form-row col2">
+          <div class="form-group">
+            <label class="form-label">契約者</label>
+            <input class="form-input" type="text" id="f_contractor" placeholder="山田太郎" maxlength="50">
+          </div>
+          <div class="form-group">
+            <label class="form-label">使用者</label>
+            <input class="form-input" type="text" id="f_user" placeholder="山田花子" maxlength="50">
+          </div>
+        </div>
+        <div class="form-row col2">
+          <div class="form-group">
+            <label class="form-label">契約日</label>
+            <input class="form-input" type="date" id="f_contractDate" oninput="calcUnlock()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">端末返却日</label>
+            <input class="form-input" type="date" id="f_returnDate">
+          </div>
+        </div>
+      </div>
+
+      <!-- オプション管理 -->
+      <div class="form-section">
+        <div class="section-label">オプション管理</div>
+        <div class="option-list" id="optionList"></div>
+      </div>
+
+      <!-- 維持期間管理 -->
+      <div class="form-section">
+        <div class="section-label">維持期間管理</div>
+        <div class="form-row col2">
+          <div class="form-group">
+            <label class="form-label">維持日数（契約日からの日数）</label>
+            <input class="form-input" type="number" id="f_maintDays" placeholder="例：100" min="1" max="999" oninput="calcUnlock()">
+          </div>
+          <div style="display:flex;align-items:flex-end">
+            <div id="unlockDisplay" style="display:none;width:100%">
+              <div class="unlock-display">
+                <div>
+                  <div style="font-size:11px;color:var(--text-muted)">MNP解禁日</div>
+                  <div class="unlock-date-val" id="unlockDateVal">—</div>
+                </div>
+                <a class="cal-link-text" id="unlockCalBtn" href="#" target="_blank" rel="noopener">
+                  <i class="ti ti-calendar-plus"></i> カレンダー追加
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- キャンペーン管理 -->
+      <div class="form-section">
+        <div class="section-label">キャンペーン管理</div>
+        <div id="campaignList"></div>
+      </div>
+
+      <!-- メモ -->
+      <div class="form-section">
+        <div class="section-label">メモ</div>
+        <div class="form-group">
+          <textarea class="form-textarea" id="f_memo" placeholder="特記事項など…" maxlength="500"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-text" onclick="closeModal()">キャンセル</button>
+      <button class="btn-primary" onclick="saveLine()"><i class="ti ti-device-floppy"></i> 保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 削除確認モーダル -->
+<div class="overlay" id="confirmOverlay" onclick="handleConfirmOverlayClick(event)">
+  <div class="confirm-box">
+    <div class="confirm-title">回線を削除しますか？</div>
+    <div class="confirm-desc"><span class="confirm-name" id="confirmName"></span> を削除します。<br>この操作は元に戻せません。</div>
+    <div class="confirm-actions">
+      <button class="btn-text" onclick="closeConfirm()">戻る</button>
+      <button class="btn-danger-text" onclick="confirmDelete()">削除する</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = 'kaisenkanri_v2';
+let lines = [];
+let editingId = null;
+let deletingId = null;
+let currentSort = 'deadline';
+
+const CARRIER_LABELS = {
+  rakuten:'楽天モバイル', docomo:'docomo', ahamo:'ahamo',
+  au:'au', uq:'UQモバイル', povo:'povo',
+  softbank:'SoftBank', ymobile:'Y!mobile', linemo:'LINEMO', other:'その他'
+};
+function carrierToName(carrier, nickname) {
+  const label = CARRIER_LABELS[carrier] || carrier || 'その他';
+  return nickname ? `${label}（${nickname}）` : label;
+}
+
+const defaultOptions  = () => Array.from({length:5}, () => ({name:'', date:'', cancelled:false}));
+const defaultCampaigns= () => Array.from({length:4}, () => ({name:'', contact:'', grantYM:'', grantPeriod:'late', grantSpecificDate:'', amount:'', granted:false}));
+
+// ── ストレージ ──────────────────────────────────
+function load() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    lines = raw.map(line => {
+      if (!line.optionDeadlines) line.optionDeadlines = defaultOptions();
+      while (line.optionDeadlines.length < 5) line.optionDeadlines.push({name:'',date:'',cancelled:false});
+      line.optionDeadlines = line.optionDeadlines.map(o => ({name:o.name||'',date:o.date||'',cancelled:!!o.cancelled}));
+      if (!line.campaigns) line.campaigns = defaultCampaigns();
+      while (line.campaigns.length < 4) line.campaigns.push(defaultCampaigns()[0]);
+      line.campaigns = line.campaigns.map(c => ({
+        name:c.name||'', contact:c.contact||'', grantYM:c.grantYM||'',
+        grantPeriod:c.grantPeriod||'late', grantSpecificDate:c.grantSpecificDate||'',
+        amount:c.amount||'', granted:!!c.granted
+      }));
+      if (!line.carrier)    line.carrier = '';
+      if (!line.nickname)   line.nickname = '';
+      if (!line.maintDays)  line.maintDays = '';
+      if (!line.returnDate) line.returnDate = '';
+      return line;
+    });
+  } catch { lines = []; }
+}
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(lines));
+  const el = document.getElementById('lastUpdated');
+  if (el) { const d=new Date(); el.textContent=`最終更新 ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`; }
+}
+
+// ── 日付ユーティリティ ──────────────────────────
+function today() { const d=new Date(); d.setHours(0,0,0,0); return d; }
+function parseDate(str) {
+  if (!str) return null;
+  const [y,m,d]=str.split('-').map(Number);
+  return new Date(y,m-1,d);
+}
+function daysUntil(str) {
+  const d=parseDate(str); if (!d) return null;
+  return Math.round((d-today())/86400000);
+}
+function fmtDate(str) {
+  const d=parseDate(str); if (!d) return '—';
+  return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;
+}
+function fmtDateJa(str) {
+  const d=parseDate(str); if (!d) return '—';
+  return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`;
+}
+function addDays(dateStr, days) {
+  const d=parseDate(dateStr); if (!d||!days) return null;
+  d.setDate(d.getDate()+parseInt(days));
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+// キャンペーン付与時期
+function grantPeriodToDate(ym, period, specificDate) {
+  if (!ym) return null;
+  if (period==='specific') return specificDate||null;
+  const [y,m]=ym.split('-').map(Number);
+  if (!y||!m) return null;
+  const day={early:1,mid:11,late:21}[period]||21;
+  return `${y}-${String(m).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+}
+function grantPeriodLabel(ym, period, specificDate) {
+  if (!ym) return null;
+  const [y,m]=ym.split('-').map(Number);
+  if (!y||!m) return null;
+  if (period==='specific') return specificDate ? fmtDate(specificDate) : null;
+  const lbl={early:'上旬',mid:'中旬',late:'下旬'};
+  return `${y}年${m}月${lbl[period]||''}`;
+}
+
+// ── Google Calendar URL ─────────────────────────
+function gcalURL(title, dateStr, details) {
+  if (!dateStr) return '#';
+  const d=parseDate(dateStr); if (!d) return '#';
+  const end=new Date(d); end.setDate(end.getDate()+1);
+  const fmt=dt=>`${dt.getFullYear()}${String(dt.getMonth()+1).padStart(2,'0')}${String(dt.getDate()).padStart(2,'0')}`;
+  const p=new URLSearchParams({action:'TEMPLATE',text:title,dates:`${fmt(d)}/${fmt(end)}`,details:details||''});
+  return `https://calendar.google.com/calendar/render?${p}`;
+}
+
+// ── 次の期限を取得 ──────────────────────────────
+function getNextDeadline(line) {
+  const candidates=[];
+  (line.optionDeadlines||[]).forEach((o,i)=>{
+    if (o.date && !o.cancelled) {
+      const d=daysUntil(o.date);
+      if (d!==null) candidates.push({days:d, label:fmtDate(o.date), kind:o.name||`オプション${i+1}解約`});
+    }
+  });
+  if (line.returnDate) {
+    const d=daysUntil(line.returnDate);
+    if (d!==null) candidates.push({days:d, label:fmtDate(line.returnDate), kind:'端末返却'});
+  }
+  if (line.contractDate && line.maintDays) {
+    const unlockStr=addDays(line.contractDate, line.maintDays);
+    if (unlockStr) { const d=daysUntil(unlockStr); if (d!==null) candidates.push({days:d, label:fmtDate(unlockStr), kind:'MNP解禁'}); }
+  }
+  (line.campaigns||[]).forEach(c=>{
+    if (c.name && !c.granted && c.grantYM) {
+      const dateStr=grantPeriodToDate(c.grantYM, c.grantPeriod, c.grantSpecificDate);
+      if (dateStr) {
+        const d=daysUntil(dateStr);
+        const label=grantPeriodLabel(c.grantYM, c.grantPeriod, c.grantSpecificDate)||fmtDate(dateStr);
+        if (d!==null) candidates.push({days:d, label, kind:'CB付与'});
+      }
+    }
+  });
+  if (!candidates.length) return null;
+  const future=candidates.filter(c=>c.days>=0);
+  if (future.length) return future.reduce((a,b)=>a.days<=b.days?a:b);
+  return candidates.reduce((a,b)=>a.days>=b.days?a:b);
+}
+
+function urgency(days) {
+  if (days===null) return 'neutral';
+  if (days<0||days<=7) return 'urgent';
+  if (days<=30) return 'warning';
+  return 'safe';
+}
+
+// ── カウント ────────────────────────────────────
+function countByStatus() {
+  let urgent=0, warning=0, safe=0, none=0;
+  lines.forEach(line=>{
+    const nd=getNextDeadline(line);
+    if (!nd) { none++; return; }
+    const u=urgency(nd.days);
+    if (u==='urgent') urgent++;
+    else if (u==='warning') warning++;
+    else if (u==='safe') safe++;
+    else none++;
+  });
+  return {urgent, warning, safe, none};
+}
+
+// ── 並び替え・検索 ──────────────────────────────
+function setSort(btn) {
+  document.querySelectorAll('.sort-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  currentSort=btn.dataset.sort;
+  renderTable();
+}
+function sortedLines() {
+  const q=(document.getElementById('searchInput')?.value||'').toLowerCase();
+  let filtered=q ? lines.filter(l=>l.name.toLowerCase().includes(q)||(l.phone||'').includes(q)) : [...lines];
+  return filtered.sort((a,b)=>{
+    if (currentSort==='name') return a.name.localeCompare(b.name,'ja');
+    if (currentSort==='created') return (a.id||0)-(b.id||0);
+    const na=getNextDeadline(a), nb=getNextDeadline(b);
+    const da=na?na.days:null, db=nb?nb.days:null;
+    if (da===null&&db===null) return 0;
+    if (da===null) return 1;
+    if (db===null) return -1;
+    return da-db;
+  });
+}
+
+// ── テーブルレンダリング ─────────────────────────
+function renderTable() {
+  const counts=countByStatus();
+  document.getElementById('cnt-urgent').innerHTML  =`${counts.urgent}<span>件</span>`;
+  document.getElementById('cnt-warning').innerHTML =`${counts.warning}<span>件</span>`;
+  document.getElementById('cnt-safe').innerHTML    =`${counts.safe}<span>件</span>`;
+  document.getElementById('cnt-none').innerHTML    =`${counts.none}<span>件</span>`;
+
+  const tbody=document.getElementById('tableBody');
+  const empty=document.getElementById('emptyState');
+  const table=document.getElementById('mainTable');
+
+  if (!lines.length) { table.style.display='none'; empty.style.display=''; return; }
+  table.style.display=''; empty.style.display='none';
+
+  const carrierBar=c=>c?`carrier-${c}`:'carrier-none';
+  const dotClass={urgent:'dot-urgent',warning:'dot-warning',safe:'dot-safe',neutral:'dot-neutral'};
+  const daysClass={urgent:'days-urgent',warning:'days-warning',safe:'days-safe',neutral:'days-neutral'};
+
+  tbody.innerHTML=sortedLines().map(line=>{
+    const nd=getNextDeadline(line);
+    const u=nd?urgency(nd.days):'neutral';
+    const dc=dotClass[u]||'dot-neutral';
+    const bc=daysClass[u]||'days-neutral';
+    const daysText=nd?(nd.days<0?'期限切れ':`${nd.days}日`):'';
+    const displayName=carrierToName(line.carrier, line.nickname);
+    return `<tr>
+      <td><div class="status-dot ${dc}"></div></td>
+      <td class="cell-name">
+        <div class="name-cell-inner">
+          <div class="carrier-bar ${carrierBar(line.carrier)}"></div>
+          <div class="name-cell-text">
+            <div class="line-name">${esc(displayName)}</div>
+            ${line.phone?`<div class="line-phone">${esc(line.phone)}</div>`:''}
+          </div>
+        </div>
+      </td>
+      <td data-label="使用者">${esc(line.user||line.contractor||'—')}</td>
+      <td data-label="次の期限">${nd?`<div class="deadline-kind">${esc(nd.kind)}</div><div class="deadline-date">${esc(nd.label)}</div>`:'<div class="deadline-date">—</div>'}</td>
+      <td data-label="残り">${nd?`<span class="days-badge ${bc}">${esc(daysText)}</span>`:''}</td>
+      <td class="cell-actions">
+        <div class="action-cell">
+          <button class="icon-btn" onclick="openModal('${line.id}')" title="編集"><i class="ti ti-edit"></i></button>
+          <button class="icon-btn" onclick="openConfirm('${line.id}')" title="削除"><i class="ti ti-trash"></i></button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function esc(str){return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+
+// ── フォーム構築 ────────────────────────────────
+function buildOptionList(opts) {
+  document.getElementById('optionList').innerHTML=opts.map((o,i)=>`
+    <div class="option-row">
+      <span class="option-num">${i+1}</span>
+      <input class="form-input" type="text" id="opt${i}_name" placeholder="オプション名" value="${esc(o.name)}" maxlength="50" oninput="updateOptCal(${i})">
+      <input class="form-input date-input" type="date" id="opt${i}_date" value="${esc(o.date)}" oninput="updateOptCal(${i})">
+      <label class="check-label"><input type="checkbox" id="opt${i}_cancelled" ${o.cancelled?'checked':''}>解約済</label>
+      <a class="cal-link ${o.date?'':'disabled'}" id="optCal${i}" href="${o.date?gcalURL(`オプション解約期限`,o.date,`回線：\nオプション：${o.name||''}`):'#'}" target="_blank" rel="noopener" title="Googleカレンダーに追加"><i class="ti ti-calendar-plus"></i></a>
+    </div>`).join('');
+}
+
+function updateOptCal(i) {
+  const date=document.getElementById(`opt${i}_date`)?.value||'';
+  const name=document.getElementById(`opt${i}_name`)?.value||'';
+  const lineName=document.getElementById('f_name')?.value||'';
+  const btn=document.getElementById(`optCal${i}`);
+  if (!btn) return;
+  if (date) { btn.href=gcalURL(`オプション解約期限`,date,`回線：${lineName}\nオプション：${name}`); btn.classList.remove('disabled'); }
+  else { btn.href='#'; btn.classList.add('disabled'); }
+}
+
+function buildCampaignList(camps) {
+  document.getElementById('campaignList').innerHTML=camps.map((c,i)=>{
+    const calUrl=c.grantYM?buildCampCalURL(c.name,c.grantYM,c.grantPeriod,c.grantSpecificDate):'#';
+    return `<div class="campaign-block">
+      <div class="campaign-block-header">
+        <div class="campaign-num">キャンペーン ${i+1}</div>
+        <label class="check-label"><input type="checkbox" id="camp${i}_granted" ${c.granted?'checked':''}> 受取済み</label>
+      </div>
+      <div class="form-row col2">
+        <div class="form-group"><label class="form-label">キャンペーン名</label>
+          <input class="form-input" type="text" id="camp${i}_name" placeholder="例：乗り換えCB" value="${esc(c.name)}" maxlength="60"></div>
+        <div class="form-group"><label class="form-label">申込電話番号 / メール</label>
+          <input class="form-input" type="text" id="camp${i}_contact" placeholder="090-XXXX / email..." value="${esc(c.contact)}" maxlength="100"></div>
+      </div>
+      <div class="form-row col2">
+        <div class="form-group"><label class="form-label">付与年月</label>
+          <input class="form-input" type="month" id="camp${i}_grantYM" value="${esc(c.grantYM)}" oninput="updateCampCal(${i})"></div>
+        <div class="form-group"><label class="form-label">時期</label>
+          <select class="form-select" id="camp${i}_grantPeriod" onchange="onPeriodChange(${i})">
+            <option value="early" ${c.grantPeriod==='early'?'selected':''}>上旬（1日〜）</option>
+            <option value="mid"   ${c.grantPeriod==='mid'?'selected':''}>中旬（11日〜）</option>
+            <option value="late"  ${!c.grantPeriod||c.grantPeriod==='late'?'selected':''}>下旬（21日〜）</option>
+            <option value="specific" ${c.grantPeriod==='specific'?'selected':''}>指定日</option>
+          </select></div>
+      </div>
+      <div class="form-row col2" style="align-items:flex-end">
+        <div class="form-group" id="specificGrp${i}" style="${c.grantPeriod==='specific'?'':'display:none'}">
+          <label class="form-label">指定日</label>
+          <input class="form-input" type="date" id="camp${i}_specificDate" value="${esc(c.grantSpecificDate)}" oninput="updateCampCal(${i})"></div>
+        <div class="form-group"><label class="form-label">金額</label>
+          <input class="form-input" type="text" id="camp${i}_amount" placeholder="例：10,000円" value="${esc(c.amount)}" maxlength="20"></div>
+        <div style="display:flex;align-items:flex-end;padding-bottom:0" id="campCalGrp${i}" style="${c.grantPeriod==='specific'?'display:none':''}">
+          <a class="cal-link-text ${c.grantYM?'':'disabled'}" id="campCal${i}" href="${calUrl}" target="_blank" rel="noopener" style="margin-bottom:0">
+            <i class="ti ti-calendar-plus"></i> カレンダー追加
+          </a>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function buildCampCalURL(name, ym, period, specificDate) {
+  const dateStr=grantPeriodToDate(ym, period, specificDate);
+  const label=grantPeriodLabel(ym, period, specificDate);
+  if (!dateStr) return '#';
+  return gcalURL(`CB付与確認：${name}`, dateStr, `${label||''}頃にポイント・キャッシュバック付与予定`);
+}
+
+function onPeriodChange(i) {
+  const period=document.getElementById(`camp${i}_grantPeriod`)?.value||'late';
+  const sg=document.getElementById(`specificGrp${i}`);
+  if (sg) sg.style.display=period==='specific'?'':'none';
+  updateCampCal(i);
+}
+
+function updateCampCal(i) {
+  const ym    =document.getElementById(`camp${i}_grantYM`)?.value||'';
+  const period=document.getElementById(`camp${i}_grantPeriod`)?.value||'late';
+  const sd    =document.getElementById(`camp${i}_specificDate`)?.value||'';
+  const name  =document.getElementById(`camp${i}_name`)?.value||'';
+  const btn   =document.getElementById(`campCal${i}`);
+  if (!btn) return;
+  if (ym) { btn.href=buildCampCalURL(name,ym,period,sd); btn.classList.remove('disabled'); }
+  else { btn.href='#'; btn.classList.add('disabled'); }
+}
+
+// ── 維持期間計算 ────────────────────────────────
+function calcUnlock() {
+  const start=document.getElementById('f_contractDate')?.value||'';
+  const days =document.getElementById('f_maintDays')?.value||'';
+  const display=document.getElementById('unlockDisplay');
+  const valEl  =document.getElementById('unlockDateVal');
+  const calBtn =document.getElementById('unlockCalBtn');
+  if (!start || !days || parseInt(days)<=0) { if (display) display.style.display='none'; return; }
+  const unlockStr=addDays(start, parseInt(days));
+  if (!unlockStr) { if (display) display.style.display='none'; return; }
+  display.style.display='';
+  valEl.textContent=fmtDateJa(unlockStr);
+  const lineName=document.getElementById('f_name')?.value||'';
+  calBtn.href=gcalURL(`MNP解禁日：${lineName}`, unlockStr, `契約日から${days}日経過。この日から乗り換え可能です。`);
+}
+
+// ── モーダル ────────────────────────────────────
+function openModal(id) {
+  editingId=id||null;
+  document.getElementById('modalTitle').textContent=id?'回線を編集':'回線を追加';
+  let line=id?lines.find(l=>l.id==id):null;
+  if (!line) line={name:'',carrier:'',nickname:'',phone:'',contractor:'',user:'',contractDate:'',returnDate:'',optionDeadlines:defaultOptions(),maintDays:'',campaigns:defaultCampaigns(),memo:''};
+  document.getElementById('f_carrier').value     =line.carrier||'';
+  document.getElementById('f_nickname').value    =line.nickname||'';
+  document.getElementById('f_phone').value       =line.phone||'';
+  document.getElementById('f_contractor').value  =line.contractor||'';
+  document.getElementById('f_user').value        =line.user||'';
+  document.getElementById('f_contractDate').value=line.contractDate||'';
+  document.getElementById('f_returnDate').value  =line.returnDate||'';
+  document.getElementById('f_maintDays').value   =line.maintDays||'';
+  document.getElementById('f_memo').value        =line.memo||'';
+  buildOptionList(line.optionDeadlines);
+  buildCampaignList(line.campaigns);
+  calcUnlock();
+  document.getElementById('overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+  setTimeout(()=>document.getElementById('f_name').focus(),150);
+}
+function closeModal() {
+  document.getElementById('overlay').classList.remove('open');
+  editingId=null; document.body.style.overflow='';
+}
+function handleOverlayClick(e) { if (e.target===document.getElementById('overlay')) closeModal(); }
+
+// ── 保存 ────────────────────────────────────────
+function saveLine() {
+  const carrierEl=document.getElementById('f_carrier');
+  if (!carrierEl.value) { carrierEl.classList.add('error'); carrierEl.focus(); carrierEl.addEventListener('change',()=>carrierEl.classList.remove('error'),{once:true}); return; }
+  const g =id=>(document.getElementById(id)?.value)||'';
+  const gt=id=>(document.getElementById(id)?.value||'').trim();
+  const gc=id=>!!document.getElementById(id)?.checked;
+  const carrier   =g('f_carrier');
+  const nickname  =gt('f_nickname');
+  const name      =carrierToName(carrier, nickname);
+  const optionDeadlines=Array.from({length:5},(_,i)=>({name:gt(`opt${i}_name`),date:g(`opt${i}_date`),cancelled:gc(`opt${i}_cancelled`)}));
+  const campaigns=Array.from({length:4},(_,i)=>({name:gt(`camp${i}_name`),contact:gt(`camp${i}_contact`),grantYM:g(`camp${i}_grantYM`),grantPeriod:g(`camp${i}_grantPeriod`)||'late',grantSpecificDate:g(`camp${i}_specificDate`),amount:gt(`camp${i}_amount`),granted:gc(`camp${i}_granted`)}));
+  const data={name,carrier,nickname,phone:gt('f_phone'),contractor:gt('f_contractor'),user:gt('f_user'),contractDate:g('f_contractDate'),returnDate:g('f_returnDate'),optionDeadlines,maintDays:g('f_maintDays'),campaigns,memo:gt('f_memo')};
+  if (editingId) { const idx=lines.findIndex(l=>l.id==editingId); if (idx!==-1) lines[idx]={...lines[idx],...data}; }
+  else lines.push({id:Date.now(),...data});
+  save(); renderTable(); closeModal();
+}
+
+// ── 削除 ────────────────────────────────────────
+function openConfirm(id) {
+  deletingId=id;
+  const line=lines.find(l=>l.id==id);
+  document.getElementById('confirmName').textContent=line?.name||'';
+  document.getElementById('confirmOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeConfirm() { document.getElementById('confirmOverlay').classList.remove('open'); deletingId=null; document.body.style.overflow=''; }
+function handleConfirmOverlayClick(e) { if (e.target===document.getElementById('confirmOverlay')) closeConfirm(); }
+function confirmDelete() { lines=lines.filter(l=>l.id!=deletingId); save(); renderTable(); closeConfirm(); }
+
+// ── CSV出力 ─────────────────────────────────────
+function exportCSV() {
+  if (!lines.length) { alert('書き出すデータがありません。'); return; }
+  const headers=['回線名','電話番号','キャリア','契約者','使用者','契約日','端末返却日',
+    'オプション①名','オプション①期限','オプション①解約済',
+    'オプション②名','オプション②期限','オプション②解約済',
+    'オプション③名','オプション③期限','オプション③解約済',
+    'オプション④名','オプション④期限','オプション④解約済',
+    'オプション⑤名','オプション⑤期限','オプション⑤解約済',
+    '維持日数',
+    'キャンペーン①名','キャンペーン①連絡先','キャンペーン①付与年月','キャンペーン①付与時期','キャンペーン①指定日','キャンペーン①金額','キャンペーン①受取済',
+    'キャンペーン②名','キャンペーン②連絡先','キャンペーン②付与年月','キャンペーン②付与時期','キャンペーン②指定日','キャンペーン②金額','キャンペーン②受取済',
+    'キャンペーン③名','キャンペーン③連絡先','キャンペーン③付与年月','キャンペーン③付与時期','キャンペーン③指定日','キャンペーン③金額','キャンペーン③受取済',
+    'キャンペーン④名','キャンペーン④連絡先','キャンペーン④付与年月','キャンペーン④付与時期','キャンペーン④指定日','キャンペーン④金額','キャンペーン④受取済',
+    'メモ'];
+  const rows=lines.map(line=>{
+    const opts=line.optionDeadlines||defaultOptions();
+    const camps=line.campaigns||defaultCampaigns();
+    const r=v=>v||''; const b=v=>v?'済':'';
+    return [r(line.name),r(line.phone),r(line.carrier),r(line.contractor),r(line.user),r(line.contractDate),r(line.returnDate),
+      ...opts.flatMap(o=>[r(o.name),r(o.date),b(o.cancelled)]),
+      r(line.maintDays),
+      ...camps.flatMap(c=>[r(c.name),r(c.contact),r(c.grantYM),r(c.grantPeriod),r(c.grantSpecificDate),r(c.amount),b(c.granted)]),
+      r(line.memo)];
+  });
+  const csv=[headers,...rows].map(row=>row.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\r\n');
+  const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  const d=new Date();
+  a.href=url; a.download=`回線管理_${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}.csv`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+}
+
+// ── CSV読込 ─────────────────────────────────────
+function importCSV(event) {
+  const file=event.target.files[0]; if (!file) return;
+  const reader=new FileReader();
+  reader.onload=function(e) {
+    try {
+      const text=e.target.result.replace(/^﻿/,'');
+      const rows=text.split(/\r?\n/).filter(r=>r.trim());
+      if (rows.length<2) { alert('データがありません。'); return; }
+      const parseRow=row=>{
+        const cols=[]; let cur='',inQ=false;
+        for (let i=0;i<row.length;i++) {
+          const c=row[i];
+          if (inQ) { if (c==='"'&&row[i+1]==='"'){cur+='"';i++;} else if (c==='"') inQ=false; else cur+=c; }
+          else { if (c==='"') inQ=true; else if (c===','){cols.push(cur);cur='';} else cur+=c; }
+        }
+        cols.push(cur); return cols;
+      };
+      const parsed=rows.slice(1).map(row=>{
+        const c=parseRow(row);
+        const b=v=>v==='済';
+        const get=(i,def='')=>c[i]!=null?c[i]:def;
+        return {
+          id:Date.now()+Math.random(),
+          name:get(0),phone:get(1),carrier:get(2),contractor:get(3),user:get(4),
+          contractDate:get(5),returnDate:get(6),
+          optionDeadlines:[0,1,2,3,4].map(i=>({name:get(7+i*3),date:get(8+i*3),cancelled:b(get(9+i*3))})),
+          maintDays:get(22),
+          campaigns:[0,1,2,3].map(i=>({name:get(23+i*7),contact:get(24+i*7),grantYM:get(25+i*7),grantPeriod:get(26+i*7)||'late',grantSpecificDate:get(27+i*7),amount:get(28+i*7),granted:b(get(29+i*7))})),
+          memo:get(51)
+        };
+      }).filter(l=>l.name);
+      if (!parsed.length) { alert('有効なデータが見つかりませんでした。'); return; }
+      const merge=confirm(`${parsed.length}件を読み込みます。\n\nOK → 現在のデータに追加\nキャンセル → 上書き`);
+      lines=merge?[...lines,...parsed]:parsed;
+      save(); renderTable(); alert(`${parsed.length}件インポートしました。`);
+    } catch(err) { alert('読み込みに失敗しました。'); console.error(err); }
+    event.target.value='';
+  };
+  reader.readAsText(file,'UTF-8');
+}
+
+// ── 印刷 ────────────────────────────────────────
+function printLines() {
+  if (!lines.length) { alert('印刷するデータがありません。'); return; }
+  const urgCls=days=>{if (days===null) return ''; if (days<0||days<=7) return 'print-warn'; if (days<=30) return 'print-caution'; return '';};
+  const rows=sortedLines().map(line=>{
+    const opts=(line.optionDeadlines||[]).filter(o=>o.date&&!o.cancelled);
+    const optText=opts.map(o=>{const d=daysUntil(o.date);return `<span class="${urgCls(d)}">${esc(o.name||'オプション')}: ${fmtDate(o.date)}${d!==null&&d<=30?` (残${d}日)`:''}</span>`;}).join('<br>')||'—';
+    const camps=(line.campaigns||[]).filter(c=>c.name&&!c.granted&&c.grantYM);
+    const campText=camps.map(c=>`${esc(c.name)}：${esc(grantPeriodLabel(c.grantYM,c.grantPeriod,c.grantSpecificDate)||'')}${c.amount?` (${esc(c.amount)})`:''}${c.contact?` [${esc(c.contact)}]`:''}`).join('<br>')||'—';
+    const unlockStr=line.contractDate&&line.maintDays?addDays(line.contractDate,line.maintDays):'';
+    return `<tr><td><strong>${esc(line.name)}</strong>${line.phone?`<br>${esc(line.phone)}`:''}</td><td>${esc(line.carrier||'—')}</td><td>${esc(line.user||line.contractor||'—')}</td><td>${optText}</td><td>${campText}</td><td>${unlockStr?`<span class="${urgCls(daysUntil(unlockStr))}">${fmtDate(unlockStr)}</span>`:'—'}</td><td>${esc(line.memo||'—')}</td></tr>`;
+  }).join('');
+  const now=new Date();
+  document.getElementById('printArea').innerHTML=`<h2>回線管理一覧</h2><div class="print-date">${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 印刷 ／ バックアップはCSV出力を使用してください</div><table><thead><tr><th>回線名</th><th>キャリア</th><th>使用者</th><th>オプション解約期限</th><th>CB付与予定</th><th>MNP解禁日</th><th>メモ</th></tr></thead><tbody>${rows}</tbody></table><div class="print-note">⚠ この印刷物からアプリへのデータ復元はできません。必ずCSVでバックアップしてください。</div>`;
+  window.print();
+}
+
+// ── v1データ移行 ─────────────────────────────────
+function migrateFromV1() {
+  if (localStorage.getItem(STORAGE_KEY)) return;
+  const v1raw = localStorage.getItem('kaisenkanri_v1');
+  if (!v1raw) return;
+  try {
+    const oldData = JSON.parse(v1raw);
+    const migrated = oldData.map(line => {
+      const cl = line.checklist || {};
+      const oldOpts = line.optionDeadlines || [];
+      const optionDeadlines = Array.from({length:5}, (_,i) => ({
+        name:      oldOpts[i]?.name || '',
+        date:      oldOpts[i]?.date || '',
+        cancelled: !!(cl[`opt${i+1}Cancelled`])
+      }));
+      const oldCamps = line.campaigns || [];
+      const email = line.campaignEmail || '';
+      const campaigns = Array.from({length:4}, (_,i) => {
+        const c = oldCamps[i] || {};
+        return {
+          name:              c.name || '',
+          contact:           email,
+          grantYM:           '',
+          grantPeriod:       'late',
+          grantSpecificDate: '',
+          amount:            '',
+          granted:           !!c.granted
+        };
+      });
+      return {
+        id:           line.id,
+        name:         line.name || '',
+        phone:        line.phone || '',
+        carrier:      '',
+        contractor:   line.contractor || '',
+        user:         line.user || '',
+        contractDate: line.contractDate || '',
+        returnDate:   line.returnDate || '',
+        optionDeadlines,
+        maintDays:    '',
+        campaigns,
+        memo:         line.memo || ''
+      };
+    }).filter(l => l.name);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(migrated));
+    console.log(`v1から${migrated.length}件移行しました`);
+  } catch(e) { console.error('v1移行失敗', e); }
+}
+
+// ── SW登録 ──────────────────────────────────────
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(()=>{});
+}
+
+// ── 初期化 ──────────────────────────────────────
+migrateFromV1();
+load();
+renderTable();
+</script>
+</body>
+</html>

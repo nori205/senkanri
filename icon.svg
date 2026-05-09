@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#2C2A26"/>
+  <text
+    x="256"
+    y="340"
+    text-anchor="middle"
+    font-family="Hiragino Mincho ProN, Yu Mincho, Georgia, serif"
+    font-size="280"
+    font-weight="500"
+    fill="#FAF8F4"
+  >回</text>
+</svg>

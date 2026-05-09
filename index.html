@@ -229,30 +229,31 @@ td.cell-actions{padding-right:14px}
 /* ── 印刷 ── */
 #printArea{display:none}
 @media print{
+  @page{size:A4 portrait;margin:8mm}
   body>*:not(#printArea){display:none!important}
-  #printArea{display:block!important;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif;color:#000;padding:8mm;font-size:10px}
-  .p-header{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #2C2A26;padding-bottom:4px;margin-bottom:6px}
-  .p-header h2{font-size:14px;font-weight:700;margin:0}
-  .p-header .p-date{font-size:8px;color:#555}
-  .p-cards{display:grid;grid-template-columns:1fr 1fr;gap:6mm}
-  .p-card{border:1px solid #2C2A26;border-radius:4px;page-break-inside:avoid;break-inside:avoid}
-  .p-card-head{background:#2C2A26;color:#fff;padding:5px 8px;border-radius:3px 3px 0 0}
-  .p-card-name{font-size:12px;font-weight:700}
-  .p-card-sub{font-size:9px;opacity:.8;margin-top:1px}
-  .p-card-body{padding:6px 8px}
-  .p-section{margin-bottom:5px}
-  .p-section-label{font-size:8px;font-weight:700;color:#555;letter-spacing:.05em;border-bottom:.5px solid #ddd;padding-bottom:2px;margin-bottom:3px}
-  .p-row{display:flex;align-items:baseline;gap:6px;margin-bottom:2px;font-size:9px}
-  .p-row-label{color:#555;white-space:nowrap;min-width:80px;flex-shrink:0}
+  #printArea{display:block!important;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif;color:#000;font-size:9px}
+  .p-header{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #2C2A26;padding-bottom:3px;margin-bottom:4px}
+  .p-header h2{font-size:13px;font-weight:700;margin:0}
+  .p-date{font-size:7.5px;color:#555}
+  .p-cards{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:4mm;height:calc(277mm - 14mm)}
+  .p-card{border:1px solid #2C2A26;border-radius:3px;page-break-inside:avoid;break-inside:avoid;display:flex;flex-direction:column;overflow:hidden}
+  .p-card-head{background:#2C2A26;color:#fff;padding:4px 7px;flex-shrink:0}
+  .p-card-name{font-size:11px;font-weight:700}
+  .p-card-sub{font-size:8px;opacity:.8;margin-top:1px}
+  .p-card-body{padding:5px 7px;flex:1;display:flex;flex-direction:column}
+  .p-section{margin-bottom:4px}
+  .p-section-label{font-size:7.5px;font-weight:700;color:#555;letter-spacing:.04em;border-bottom:.5px solid #ddd;padding-bottom:1px;margin-bottom:2px}
+  .p-row{display:flex;align-items:baseline;gap:5px;margin-bottom:1px;font-size:8.5px}
+  .p-row-label{color:#555;white-space:nowrap;min-width:75px;flex-shrink:0}
   .p-row-value{font-weight:500}
   .p-warn{color:#A23B2C;font-weight:700}
   .p-caution{color:#8B5E1F;font-weight:700}
-  .p-check{display:inline-block;width:10px;height:10px;border:1px solid #999;border-radius:2px;margin-right:4px;vertical-align:middle;flex-shrink:0}
+  .p-check{display:inline-block;width:9px;height:9px;border:1px solid #999;border-radius:1px;margin-right:3px;vertical-align:middle;flex-shrink:0}
   .p-check.done{background:#2C2A26;border-color:#2C2A26}
-  .p-memo{margin-top:5px;border-top:.5px solid #ddd;padding-top:4px}
-  .p-memo-label{font-size:8px;color:#555;margin-bottom:3px}
-  .p-memo-line{border-bottom:.5px solid #ccc;height:14px;margin-bottom:3px}
-  .p-footer{margin-top:8mm;font-size:7px;color:#888;border-top:.5px solid #ccc;padding-top:4px}
+  .p-memo{margin-top:auto;border-top:.5px solid #ddd;padding-top:3px}
+  .p-memo-label{font-size:7.5px;color:#555;margin-bottom:2px}
+  .p-memo-line{border-bottom:.5px solid #ccc;height:13px;margin-bottom:2px}
+  .p-footer{font-size:7px;color:#888;border-top:.5px solid #ccc;padding-top:3px;margin-top:3mm}
 }
 
 /* ── モバイル ── */
@@ -1074,7 +1075,7 @@ function printLines() {
         <span class="p-row-label">${esc(c.name)}</span>
         <span class="p-row-value">${esc(label)}${c.amount?` (${esc(c.amount)})`:''}</span>
       </div>
-      ${c.contact?`<div class="p-row"><span class="p-row-label" style="padding-left:14px;color:#888">申込連絡先</span><span class="p-row-value" style="color:#555">${esc(c.contact)}</span></div>`:''}`;
+      ${c.contact?`<div class="p-row"><span class="p-row-label" style="padding-left:12px;color:#888;font-size:7.5px">申込先</span><span class="p-row-value" style="color:#555;font-size:7.5px">${esc(c.contact)}</span></div>`:''}`;
     }).join('');
 
     // MNP解禁日
@@ -1098,7 +1099,6 @@ function printLines() {
         <div class="p-memo">
           <div class="p-memo-label">メモ・書き込み欄</div>
           ${memoContent}
-          <div class="p-memo-line"></div>
           <div class="p-memo-line"></div>
           <div class="p-memo-line"></div>
         </div>

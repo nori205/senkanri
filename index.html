@@ -230,16 +230,29 @@ td.cell-actions{padding-right:14px}
 #printArea{display:none}
 @media print{
   body>*:not(#printArea){display:none!important}
-  #printArea{display:block!important;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif;font-size:10px;color:#000;padding:10mm}
-  #printArea h2{font-size:14px;margin-bottom:4px;border-bottom:2px solid #333;padding-bottom:4px}
-  #printArea .print-date{font-size:9px;color:#555;margin-bottom:10px}
-  #printArea table{width:100%;border-collapse:collapse}
-  #printArea th{background:#2C2A26;color:#fff;padding:4px 6px;font-size:9px;white-space:nowrap;text-align:left}
-  #printArea td{padding:4px 6px;border-bottom:.5px solid #ddd;font-size:9px;vertical-align:top}
-  #printArea tr:nth-child(even) td{background:#f8f8f8}
-  .print-warn{color:#A23B2C;font-weight:bold}
-  .print-caution{color:#8B5E1F;font-weight:bold}
-  .print-note{font-size:8px;color:#555;margin-top:10px;border-top:1px solid #ccc;padding-top:6px}
+  #printArea{display:block!important;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif;color:#000;padding:8mm;font-size:10px}
+  .p-header{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #2C2A26;padding-bottom:4px;margin-bottom:6px}
+  .p-header h2{font-size:14px;font-weight:700;margin:0}
+  .p-header .p-date{font-size:8px;color:#555}
+  .p-cards{display:grid;grid-template-columns:1fr 1fr;gap:6mm}
+  .p-card{border:1px solid #2C2A26;border-radius:4px;page-break-inside:avoid;break-inside:avoid}
+  .p-card-head{background:#2C2A26;color:#fff;padding:5px 8px;border-radius:3px 3px 0 0}
+  .p-card-name{font-size:12px;font-weight:700}
+  .p-card-sub{font-size:9px;opacity:.8;margin-top:1px}
+  .p-card-body{padding:6px 8px}
+  .p-section{margin-bottom:5px}
+  .p-section-label{font-size:8px;font-weight:700;color:#555;letter-spacing:.05em;border-bottom:.5px solid #ddd;padding-bottom:2px;margin-bottom:3px}
+  .p-row{display:flex;align-items:baseline;gap:6px;margin-bottom:2px;font-size:9px}
+  .p-row-label{color:#555;white-space:nowrap;min-width:80px;flex-shrink:0}
+  .p-row-value{font-weight:500}
+  .p-warn{color:#A23B2C;font-weight:700}
+  .p-caution{color:#8B5E1F;font-weight:700}
+  .p-check{display:inline-block;width:10px;height:10px;border:1px solid #999;border-radius:2px;margin-right:4px;vertical-align:middle;flex-shrink:0}
+  .p-check.done{background:#2C2A26;border-color:#2C2A26}
+  .p-memo{margin-top:5px;border-top:.5px solid #ddd;padding-top:4px}
+  .p-memo-label{font-size:8px;color:#555;margin-bottom:3px}
+  .p-memo-line{border-bottom:.5px solid #ccc;height:14px;margin-bottom:3px}
+  .p-footer{margin-top:8mm;font-size:7px;color:#888;border-top:.5px solid #ccc;padding-top:4px}
 }
 
 /* ── モバイル ── */
@@ -1033,17 +1046,74 @@ function importCSV(event) {
 // ── 印刷 ────────────────────────────────────────
 function printLines() {
   if (!lines.length) { alert('印刷するデータがありません。'); return; }
-  const urgCls=days=>{if (days===null) return ''; if (days<0||days<=7) return 'print-warn'; if (days<=30) return 'print-caution'; return '';};
-  const rows=sortedLines().map(line=>{
-    const opts=(line.optionDeadlines||[]).filter(o=>o.date&&!o.cancelled);
-    const optText=opts.map(o=>{const d=daysUntil(o.date);return `<span class="${urgCls(d)}">${esc(o.name||'オプション')}: ${fmtDate(o.date)}${d!==null&&d<=30?` (残${d}日)`:''}</span>`;}).join('<br>')||'—';
-    const camps=(line.campaigns||[]).filter(c=>c.name&&!c.granted&&c.grantYM);
-    const campText=camps.map(c=>`${esc(c.name)}：${esc(grantPeriodLabel(c.grantYM,c.grantPeriod,c.grantSpecificDate)||'')}${c.amount?` (${esc(c.amount)})`:''}${c.contact?` [${esc(c.contact)}]`:''}`).join('<br>')||'—';
+  const urgCls=days=>{if (days===null) return ''; if (days<0||days<=7) return 'p-warn'; if (days<=30) return 'p-caution'; return '';};
+
+  const cards=sortedLines().map(line=>{
+    const displayName=carrierToName(line.carrier, line.nickname);
+    const sub=[line.contractor?`契約者：${line.contractor}`:'', line.user?`使用者：${line.user}`:''].filter(Boolean).join('　');
+
+    // オプション
+    const opts=(line.optionDeadlines||[]).filter(o=>o.date);
+    const optRows=opts.map(o=>{
+      const d=daysUntil(o.date);
+      const checkClass=o.cancelled?'done':'';
+      return `<div class="p-row">
+        <span class="p-check ${checkClass}"></span>
+        <span class="p-row-label">${esc(o.name||'オプション')}</span>
+        <span class="p-row-value ${urgCls(d)}">${fmtDate(o.date)}${d!==null&&d<=30&&d>=0?` 残${d}日`:''}${d!==null&&d<0?' 期限切れ':''}</span>
+      </div>`;
+    }).join('');
+
+    // キャンペーン
+    const camps=(line.campaigns||[]).filter(c=>c.name);
+    const campRows=camps.map(c=>{
+      const label=grantPeriodLabel(c.grantYM,c.grantPeriod,c.grantSpecificDate)||'—';
+      const checkClass=c.granted?'done':'';
+      return `<div class="p-row">
+        <span class="p-check ${checkClass}"></span>
+        <span class="p-row-label">${esc(c.name)}</span>
+        <span class="p-row-value">${esc(label)}${c.amount?` (${esc(c.amount)})`:''}</span>
+      </div>
+      ${c.contact?`<div class="p-row"><span class="p-row-label" style="padding-left:14px;color:#888">申込連絡先</span><span class="p-row-value" style="color:#555">${esc(c.contact)}</span></div>`:''}`;
+    }).join('');
+
+    // MNP解禁日
     const unlockStr=line.contractDate&&line.maintDays?addDays(line.contractDate,line.maintDays):'';
-    return `<tr><td><strong>${esc(line.name)}</strong>${line.phone?`<br>${esc(line.phone)}`:''}</td><td>${esc(line.carrier||'—')}</td><td>${esc(line.user||line.contractor||'—')}</td><td>${optText}</td><td>${campText}</td><td>${unlockStr?`<span class="${urgCls(daysUntil(unlockStr))}">${fmtDate(unlockStr)}</span>`:'—'}</td><td>${esc(line.memo||'—')}</td></tr>`;
+    const unlockD=unlockStr?daysUntil(unlockStr):null;
+
+    // メモ（既存＋書き込み線3本）
+    const memoContent=line.memo?`<div style="font-size:9px;margin-bottom:4px;color:#333">${esc(line.memo)}</div>`:'';
+
+    return `<div class="p-card">
+      <div class="p-card-head">
+        <div class="p-card-name">${esc(displayName)}${line.phone?`　${esc(line.phone)}`:''}</div>
+        ${sub?`<div class="p-card-sub">${esc(sub)}</div>`:''}
+      </div>
+      <div class="p-card-body">
+        ${opts.length?`<div class="p-section"><div class="p-section-label">オプション解約期限</div>${optRows}</div>`:''}
+        ${camps.length?`<div class="p-section"><div class="p-section-label">キャンペーン / CB付与</div>${campRows}</div>`:''}
+        ${unlockStr?`<div class="p-section"><div class="p-section-label">MNP解禁日</div>
+          <div class="p-row"><span class="p-row-label">乗り換え可能日</span><span class="p-row-value ${urgCls(unlockD)}">${fmtDate(unlockStr)}${unlockD!==null&&unlockD>=0?` 残${unlockD}日`:''}</span></div>
+        </div>`:''}
+        <div class="p-memo">
+          <div class="p-memo-label">メモ・書き込み欄</div>
+          ${memoContent}
+          <div class="p-memo-line"></div>
+          <div class="p-memo-line"></div>
+          <div class="p-memo-line"></div>
+        </div>
+      </div>
+    </div>`;
   }).join('');
+
   const now=new Date();
-  document.getElementById('printArea').innerHTML=`<h2>回線管理一覧</h2><div class="print-date">${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 印刷 ／ バックアップはCSV出力を使用してください</div><table><thead><tr><th>回線名</th><th>キャリア</th><th>使用者</th><th>オプション解約期限</th><th>CB付与予定</th><th>MNP解禁日</th><th>メモ</th></tr></thead><tbody>${rows}</tbody></table><div class="print-note">⚠ この印刷物からアプリへのデータ復元はできません。必ずCSVでバックアップしてください。</div>`;
+  document.getElementById('printArea').innerHTML=`
+    <div class="p-header">
+      <h2>回線管理シート</h2>
+      <div class="p-date">${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日印刷　□チェック済み ■未チェック</div>
+    </div>
+    <div class="p-cards">${cards}</div>
+    <div class="p-footer">⚠ この印刷物からアプリへのデータ復元はできません。バックアップにはアプリの「CSV出力」を使用してください。</div>`;
   window.print();
 }
 

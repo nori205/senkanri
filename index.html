@@ -158,6 +158,13 @@ td.cell-actions{padding-right:14px}
 .days-safe{background:var(--bg-subtle);color:var(--text-secondary)}
 .days-neutral{background:var(--bg-subtle);color:var(--text-muted)}
 
+/* キャンペーンチップ（モバイルカード用） */
+.cell-camps{display:none}
+.card-camps{display:flex;flex-wrap:wrap;gap:6px}
+.camp-chip{display:inline-flex;align-items:center;gap:4px;font-size:12px;padding:3px 9px;border-radius:4px;border:.5px solid var(--border-default);background:var(--bg-subtle);color:var(--text-secondary)}
+.camp-chip.granted{color:var(--text-muted);text-decoration:line-through;background:transparent}
+.camp-chip i{font-size:11px}
+
 /* 操作 */
 .action-cell{display:flex;justify-content:flex-end;gap:4px}
 .icon-btn{width:26px;height:26px;border:1px solid var(--border-default);border-radius:4px;background:var(--bg-surface);color:var(--text-secondary);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:background 50ms,color 50ms}
@@ -288,7 +295,10 @@ td.cell-actions{padding-right:14px}
   td.cell-name{padding:0 0 8px;border-bottom:.5px solid var(--border-default);margin-bottom:6px}
   td.cell-actions{padding-top:8px;border-top:.5px solid var(--border-default);margin-top:4px}
   td[data-label]::before{content:attr(data-label);font-size:13px;color:var(--text-muted);display:block;margin-bottom:1px}
-  td.cell-name::before,td.cell-actions::before{content:none}
+  td.cell-name::before,td.cell-actions::before,td.cell-camps::before{content:none}
+  td.cell-camps{display:block;padding-top:6px;border-top:.5px solid var(--border-default);margin-top:4px}
+  .camp-chip{font-size:13px;padding:4px 11px}
+  .camp-chip i{font-size:12px}
   .action-cell{justify-content:flex-start}
   .form-row.col2,.form-row.col3{grid-template-columns:1fr}
   .option-row .date-input{width:auto;flex:1}
@@ -420,6 +430,7 @@ td.cell-actions{padding-right:14px}
               <th class="col-deadline">次の期限</th>
               <th class="col-days">残り</th>
               <th class="col-actions">操作</th>
+              <th style="display:none"></th>
             </tr>
           </thead>
           <tbody id="tableBody"></tbody>
@@ -881,6 +892,11 @@ function renderTable() {
           <button class="icon-btn" onclick="openConfirm('${line.id}')" title="削除"><i class="ti ti-trash"></i></button>
         </div>
       </td>
+      <td class="cell-camps">${(()=>{
+        const cs=(line.campaigns||[]).filter(c=>c.name);
+        if (!cs.length) return '';
+        return `<div class="card-camps">${cs.map(c=>`<span class="camp-chip${c.granted?' granted':''}">${c.granted?'<i class="ti ti-check"></i>':'<i class="ti ti-ticket"></i>'}${esc(c.name)}</span>`).join('')}</div>`;
+      })()}</td>
     </tr>`;
   }).join('');
 }

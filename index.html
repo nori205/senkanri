@@ -142,6 +142,13 @@ td.cell-actions{padding-right:14px}
 .deadline-kind{font-size:11px;color:var(--text-secondary)}
 .deadline-date{font-size:11px;color:var(--text-muted)}
 
+/* 全期限リスト（モバイル切替） */
+.deadline-desktop{display:block}
+.deadline-mobile-list{display:none}
+.dl-item{display:flex;align-items:center;gap:8px;padding:5px 0}
+.dl-item:not(:last-child){border-bottom:.5px solid var(--border-default)}
+.dl-name{font-size:12px;color:var(--text-secondary);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
 /* 残り日数 */
 .days-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:500;font-variant-numeric:tabular-nums}
 .days-badge i{font-size:12px}
@@ -297,6 +304,12 @@ td.cell-actions{padding-right:14px}
   .header-breadcrumb{font-size:16px}
   .days-badge{font-size:13px}
   .days-badge i{font-size:14px}
+  .deadline-desktop{display:none}
+  .deadline-mobile-list{display:block}
+  td[data-label="残り"]{display:none}
+  td.cell-deadline::before{content:none}
+  .dl-name{font-size:14px}
+  .dl-item{padding:8px 0}
   .deadline-kind,.deadline-date{font-size:13px}
   .form-label{font-size:14px}
   .section-label{font-size:15px}
@@ -728,6 +741,36 @@ function getNextDeadline(line) {
   return candidates.reduce((a,b)=>a.days>=b.days?a:b);
 }
 
+function getAllDeadlines(line) {
+  const items=[];
+  (line.optionDeadlines||[]).forEach((o,i)=>{
+    if (o.date && !o.cancelled) {
+      const d=daysUntil(o.date);
+      if (d!==null) items.push({days:d, label:fmtDate(o.date), kind:o.name||`オプション${i+1}解約`});
+    }
+  });
+  if (line.returnDate) {
+    const d=daysUntil(line.returnDate);
+    if (d!==null) items.push({days:d, label:fmtDate(line.returnDate), kind:'端末返却'});
+  }
+  if (line.contractDate && line.maintDays) {
+    const unlockStr=addDays(line.contractDate, line.maintDays);
+    if (unlockStr) { const d=daysUntil(unlockStr); if (d!==null) items.push({days:d, label:fmtDate(unlockStr), kind:'MNP解禁'}); }
+  }
+  (line.campaigns||[]).forEach(c=>{
+    if (c.name && !c.granted && c.grantYM) {
+      const dateStr=grantPeriodToDate(c.grantYM, c.grantPeriod, c.grantSpecificDate);
+      if (dateStr) {
+        const d=daysUntil(dateStr);
+        if (d!==null) items.push({days:d, label:grantPeriodLabel(c.grantYM,c.grantPeriod,c.grantSpecificDate)||fmtDate(dateStr), kind:`CB：${c.name}`});
+      }
+    }
+  });
+  const future=items.filter(x=>x.days>=0).sort((a,b)=>a.days-b.days);
+  const past  =items.filter(x=>x.days<0 ).sort((a,b)=>b.days-a.days);
+  return [...future,...past];
+}
+
 function urgency(days) {
   if (days===null) return 'neutral';
   if (days<0||days<=7) return 'urgent';
@@ -804,6 +847,15 @@ function renderTable() {
     const bc=daysClass[u]||'days-neutral';
     const daysText=nd?(nd.days<0?'期限切れ':`${nd.days}日`):'';
     const displayName=carrierToName(line.carrier, line.nickname, line.carrierOther);
+    const allDl=getAllDeadlines(line);
+    const mobileListHtml=allDl.length
+      ? allDl.map(dl=>{
+          const u2=urgency(dl.days);
+          const bc2=daysClass[u2]||'days-neutral';
+          const dtxt2=dl.days<0?'期限切れ':`${dl.days}日`;
+          return `<div class="dl-item"><span class="dl-name">${esc(dl.kind)}</span><span class="days-badge ${bc2}"><i class="ti ti-alarm"></i>${dtxt2}</span></div>`;
+        }).join('')
+      : `<div class="dl-item"><span class="dl-name" style="color:var(--text-muted)">—</span></div>`;
     return `<tr>
       <td><div class="status-dot ${dc}"></div></td>
       <td class="cell-name">
@@ -816,7 +868,10 @@ function renderTable() {
         </div>
       </td>
       <td data-label="使用者">${esc(line.user||line.contractor||'—')}</td>
-      <td data-label="次の期限">${nd?`<div class="deadline-kind">${esc(nd.kind)}</div><div class="deadline-date">${esc(nd.label)}</div>`:'<div class="deadline-date">—</div>'}</td>
+      <td class="cell-deadline" data-label="次の期限">
+        <div class="deadline-desktop">${nd?`<div class="deadline-kind">${esc(nd.kind)}</div><div class="deadline-date">${esc(nd.label)}</div>`:'<div class="deadline-date">—</div>'}</div>
+        <div class="deadline-mobile-list">${mobileListHtml}</div>
+      </td>
       <td data-label="残り">${nd?`<span class="days-badge ${bc}"><i class="ti ti-alarm"></i>${esc(daysText)}</span>`:''}</td>
       <td class="cell-actions">
         <div class="action-cell">

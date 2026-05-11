@@ -217,11 +217,6 @@ td.cell-actions{padding-right:14px}
 .btn-text{background:none;border:none;color:var(--text-muted);font-size:13px;cursor:pointer;padding:6px 10px;border-radius:5px;font-family:inherit;transition:background 50ms}
 .btn-text:hover{background:var(--bg-hover)}
 
-/* メールドメイン候補 */
-#domainDropdown{position:fixed;background:var(--bg-surface);border:1px solid var(--border-strong);border-radius:10px;z-index:9999;overflow:hidden;box-shadow:0 6px 24px rgba(44,42,38,.18);display:none}
-.domain-option{padding:13px 16px;cursor:pointer;font-size:15px;color:var(--text-primary);border-bottom:.5px solid var(--border-default)}
-.domain-option:last-child{border-bottom:none}
-.domain-option:active{background:var(--bg-hover)}
 
 /* 削除確認 */
 .confirm-box{background:var(--bg-surface);border-radius:10px;padding:24px 20px;width:100%;max-width:320px;box-shadow:0 8px 40px rgba(44,42,38,.2);opacity:0;transform:translateY(8px);transition:opacity 150ms,transform 150ms}
@@ -342,6 +337,7 @@ td.cell-actions{padding-right:14px}
 </style>
 </head>
 <body>
+<datalist id="emailDomainList"></datalist>
 <div id="printArea"></div>
 
 <div class="layout">
@@ -899,7 +895,7 @@ function buildCampaignList(camps) {
       </div>
       <div class="form-row">
         <div class="form-group"><label class="form-label">申込メール</label>
-          <input class="form-input" type="email" id="camp${i}_contactEmail" placeholder="example@gmail.com" value="${esc(c.contactEmail)}" maxlength="100" oninput="handleEmailInput(this)" autocomplete="off"></div>
+          <input class="form-input" type="text" id="camp${i}_contactEmail" list="emailDomainList" placeholder="example@gmail.com" value="${esc(c.contactEmail)}" maxlength="100" oninput="handleEmailInput(this)" autocomplete="off"></div>
       </div>
       <div class="form-row col2">
         <div class="form-group"><label class="form-label">付与年月</label>
@@ -983,73 +979,22 @@ const EMAIL_DOMAINS = [
   'i.softbank.jp','rakuten.jp'
 ];
 
-function handleContactInput(el) {
-  const raw = el.value;
-  // 先頭が数字 → 電話番号として自動フォーマット
-  if (/^\d/.test(raw.replace(/-/g,''))) {
-    let d = raw.replace(/\D/g,'');
-    if (d.length > 11) d = d.slice(0,11);
-    if (d.length <= 3)      el.value = d;
-    else if (d.length <= 7) el.value = d.slice(0,3)+'-'+d.slice(3);
-    else                    el.value = d.slice(0,3)+'-'+d.slice(3,7)+'-'+d.slice(7);
-    hideDomainDropdown(); return;
-  }
-  // @ が含まれる → メールドメイン候補を表示
-  const atIdx = raw.indexOf('@');
-  if (atIdx >= 0) {
-    const local = raw.slice(0, atIdx);
-    const typed = raw.slice(atIdx+1).toLowerCase();
-    const hits = EMAIL_DOMAINS.filter(d => d.startsWith(typed) && d !== typed);
-    if (hits.length) { showDomainDropdown(el, hits, local); return; }
-  }
-  hideDomainDropdown();
-}
-
-function showDomainDropdown(el, domains, local) {
-  let dd = document.getElementById('domainDropdown');
-  if (!dd) {
-    dd = document.createElement('div');
-    dd.id = 'domainDropdown';
-    document.body.appendChild(dd);
-  }
-  const r = el.getBoundingClientRect();
-  dd.style.top    = (r.bottom + 4) + 'px';
-  dd.style.left   = r.left + 'px';
-  dd.style.width  = r.width + 'px';
-  dd.dataset.target = el.id;
-  dd.innerHTML = domains.map(d =>
-    `<div class="domain-option" ontouchstart="" onclick="selectDomain('${local}@${d}','${el.id}')">@${d}</div>`
-  ).join('');
-  dd.style.display = 'block';
-}
-
-function selectDomain(value, targetId) {
-  const el = document.getElementById(targetId);
-  if (el) { el.value = value; el.focus(); }
-  hideDomainDropdown();
-}
-
 function handleEmailInput(el) {
   const v = el.value;
+  const dl = document.getElementById('emailDomainList');
+  if (!dl) return;
   const atIdx = v.indexOf('@');
   if (atIdx >= 0) {
     const local = v.slice(0, atIdx);
-    const typed = v.slice(atIdx+1).toLowerCase();
-    const hits = EMAIL_DOMAINS.filter(d => d.startsWith(typed) && d !== typed);
-    if (hits.length) { showDomainDropdown(el, hits, local); return; }
+    const typed = v.slice(atIdx + 1).toLowerCase();
+    dl.innerHTML = EMAIL_DOMAINS
+      .filter(d => d.startsWith(typed))
+      .map(d => `<option value="${local}@${d}">`)
+      .join('');
+  } else {
+    dl.innerHTML = '';
   }
-  hideDomainDropdown();
 }
-
-function hideDomainDropdown() {
-  const dd = document.getElementById('domainDropdown');
-  if (dd) dd.style.display = 'none';
-}
-
-document.addEventListener('click', e => {
-  const dd = document.getElementById('domainDropdown');
-  if (dd && !dd.contains(e.target)) hideDomainDropdown();
-}, true);
 
 // ── 維持期間計算 ────────────────────────────────
 function calcUnlock() {

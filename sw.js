@@ -1,4 +1,4 @@
-const CACHE = 'kaisen-v2';
+const CACHE = 'kaisen-v3';
 const ASSETS = ['./index.html', './manifest.json', './icon.svg'];
 
 self.addEventListener('install', e => {
@@ -15,8 +15,17 @@ self.addEventListener('activate', e => {
   self.clients.claim();
 });
 
+// ネットワーク優先：常に最新を取得してキャッシュを更新、オフライン時のみキャッシュを使用
 self.addEventListener('fetch', e => {
   e.respondWith(
-    caches.match(e.request).then(r => r || fetch(e.request))
+    fetch(e.request)
+      .then(response => {
+        if (response.ok) {
+          const clone = response.clone();
+          caches.open(CACHE).then(c => c.put(e.request, clone));
+        }
+        return response;
+      })
+      .catch(() => caches.match(e.request))
   );
 });

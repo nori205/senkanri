@@ -1020,7 +1020,7 @@ function showDomainDropdown(el, domains, local) {
   dd.innerHTML = domains.map(d =>
     `<div class="domain-option" ontouchstart="" onclick="selectDomain('${local}@${d}','${el.id}')">@${d}</div>`
   ).join('');
-  dd.style.display = '';
+  dd.style.display = 'block';
 }
 
 function selectDomain(value, targetId) {

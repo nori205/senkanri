@@ -370,24 +370,6 @@ td.cell-actions{padding-right:14px}
 
     <div class="content">
       <!-- メトリックカード -->
-      <div class="metrics">
-        <div class="metric-card">
-          <div class="metric-top"><div class="metric-label">7日以内</div><div class="metric-badge badge-urgent">緊急</div></div>
-          <div class="metric-count" id="cnt-urgent">0<span>件</span></div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-top"><div class="metric-label">30日以内</div><div class="metric-badge badge-warning">注意</div></div>
-          <div class="metric-count" id="cnt-warning">0<span>件</span></div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-top"><div class="metric-label">30日超</div></div>
-          <div class="metric-count" id="cnt-safe">0<span>件</span></div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-top"><div class="metric-label">期限なし</div></div>
-          <div class="metric-count" id="cnt-none">0<span>件</span></div>
-        </div>
-      </div>
 
       <!-- 未受取CBバナー -->
       <div id="unclaimedBanner" style="display:none;background:var(--bg-subtle);border:.5px solid var(--border-strong);border-radius:8px;padding:10px 16px;margin-bottom:16px;font-size:12px;color:var(--text-secondary);display:flex;align-items:center;gap:8px">
@@ -792,11 +774,6 @@ function sortedLines() {
 
 // ── テーブルレンダリング ─────────────────────────
 function renderTable() {
-  const counts=countByStatus();
-  document.getElementById('cnt-urgent').innerHTML  =`${counts.urgent}<span>件</span>`;
-  document.getElementById('cnt-warning').innerHTML =`${counts.warning}<span>件</span>`;
-  document.getElementById('cnt-safe').innerHTML    =`${counts.safe}<span>件</span>`;
-  document.getElementById('cnt-none').innerHTML    =`${counts.none}<span>件</span>`;
   const unclaimed=countUnclaimedCB();
   const banner=document.getElementById('unclaimedBanner');
   const bannerText=document.getElementById('unclaimedBannerText');

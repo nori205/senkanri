@@ -36,7 +36,7 @@
   --header-h:    60px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;background:var(--bg-page);color:var(--text-primary);min-height:100vh;font-size:14px;line-height:1.6}
+body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;background:var(--bg-page);color:var(--text-primary);min-height:100vh;font-size:14px;line-height:1.6;font-weight:500}
 
 /* ── レイアウト ── */
 .layout{display:flex;min-height:100vh}
@@ -458,7 +458,7 @@ td.cell-actions{padding-right:14px}
         <div class="form-row col2">
           <div class="form-group">
             <label class="form-label">キャリア *</label>
-            <select class="form-select" id="f_carrier" required>
+            <select class="form-select" id="f_carrier" required onchange="onCarrierChange()">
               <option value="">— 選択 —</option>
               <option value="rakuten">楽天モバイル</option>
               <option value="docomo">docomo</option>
@@ -471,6 +471,7 @@ td.cell-actions{padding-right:14px}
               <option value="linemo">LINEMO</option>
               <option value="other">その他</option>
             </select>
+            <input class="form-input" type="text" id="f_carrier_other" placeholder="キャリア名を入力（例：IIJmio）" maxlength="30" style="display:none;margin-top:8px">
           </div>
           <div class="form-group">
             <label class="form-label">識別名（任意）</label>
@@ -580,9 +581,22 @@ const CARRIER_LABELS = {
   au:'au', uq:'UQモバイル', povo:'povo',
   softbank:'SoftBank', ymobile:'Y!mobile', linemo:'LINEMO', other:'その他'
 };
-function carrierToName(carrier, nickname) {
-  const label = CARRIER_LABELS[carrier] || carrier || 'その他';
-  return nickname ? `${label}（${nickname}）` : label;
+function carrierToName(carrier, nickname, carrierOther) {
+  const base = (carrier === 'other' && carrierOther) ? carrierOther : (CARRIER_LABELS[carrier] || carrier || 'その他');
+  return nickname ? `${base}（${nickname}）` : base;
+}
+function onCarrierChange() {
+  const v = document.getElementById('f_carrier').value;
+  const el = document.getElementById('f_carrier_other');
+  el.style.display = v === 'other' ? '' : 'none';
+  if (v === 'other') el.focus();
+}
+function formatPhone(e) {
+  let v = e.target.value.replace(/\D/g, '');
+  if (v.length > 11) v = v.slice(0, 11);
+  if (v.length <= 3)      e.target.value = v;
+  else if (v.length <= 7) e.target.value = v.slice(0,3) + '-' + v.slice(3);
+  else                    e.target.value = v.slice(0,3) + '-' + v.slice(3,7) + '-' + v.slice(7);
 }
 
 const defaultOptions  = () => Array.from({length:5}, () => ({name:'', date:'', cancelled:false}));
@@ -804,7 +818,7 @@ function renderTable() {
     const dc=dotClass[u]||'dot-neutral';
     const bc=daysClass[u]||'days-neutral';
     const daysText=nd?(nd.days<0?'期限切れ':`${nd.days}日`):'';
-    const displayName=carrierToName(line.carrier, line.nickname);
+    const displayName=carrierToName(line.carrier, line.nickname, line.carrierOther);
     return `<tr>
       <td><div class="status-dot ${dc}"></div></td>
       <td class="cell-name">
@@ -963,10 +977,14 @@ function openModal(id) {
   editingId=id||null;
   document.getElementById('modalTitle').textContent=id?'回線を編集':'回線を追加';
   let line=id?lines.find(l=>l.id==id):null;
-  if (!line) line={name:'',carrier:'',nickname:'',phone:'',contractor:'',user:'',contractDate:'',returnDate:'',optionDeadlines:defaultOptions(),maintDays:'',campaigns:defaultCampaigns(),memo:''};
+  if (!line) line={name:'',carrier:'',carrierOther:'',nickname:'',phone:'',contractor:'',user:'',contractDate:'',returnDate:'',optionDeadlines:defaultOptions(),maintDays:'',campaigns:defaultCampaigns(),memo:''};
   document.getElementById('f_carrier').value     =line.carrier||'';
+  const otherEl=document.getElementById('f_carrier_other');
+  otherEl.value=line.carrierOther||'';
+  otherEl.style.display=line.carrier==='other'?'':'none';
   document.getElementById('f_nickname').value    =line.nickname||'';
   document.getElementById('f_phone').value       =line.phone||'';
+  document.getElementById('f_phone').oninput     =formatPhone;
   document.getElementById('f_contractor').value  =line.contractor||'';
   document.getElementById('f_user').value        =line.user||'';
   document.getElementById('f_contractDate').value=line.contractDate||'';
@@ -993,12 +1011,13 @@ function saveLine() {
   const g =id=>(document.getElementById(id)?.value)||'';
   const gt=id=>(document.getElementById(id)?.value||'').trim();
   const gc=id=>!!document.getElementById(id)?.checked;
-  const carrier   =g('f_carrier');
-  const nickname  =gt('f_nickname');
-  const name      =carrierToName(carrier, nickname);
+  const carrier      =g('f_carrier');
+  const carrierOther =carrier==='other'?gt('f_carrier_other'):'';
+  const nickname     =gt('f_nickname');
+  const name         =carrierToName(carrier, nickname, carrierOther);
   const optionDeadlines=Array.from({length:5},(_,i)=>({name:gt(`opt${i}_name`),date:g(`opt${i}_date`),cancelled:gc(`opt${i}_cancelled`)}));
   const campaigns=Array.from({length:4},(_,i)=>({name:gt(`camp${i}_name`),contact:gt(`camp${i}_contact`),grantYM:g(`camp${i}_grantYM`),grantPeriod:g(`camp${i}_grantPeriod`)||'late',grantSpecificDate:g(`camp${i}_specificDate`),amount:gt(`camp${i}_amount`),granted:gc(`camp${i}_granted`)}));
-  const data={name,carrier,nickname,phone:gt('f_phone'),contractor:gt('f_contractor'),user:gt('f_user'),contractDate:g('f_contractDate'),returnDate:g('f_returnDate'),optionDeadlines,maintDays:g('f_maintDays'),campaigns,memo:gt('f_memo')};
+  const data={name,carrier,carrierOther,nickname,phone:gt('f_phone'),contractor:gt('f_contractor'),user:gt('f_user'),contractDate:g('f_contractDate'),returnDate:g('f_returnDate'),optionDeadlines,maintDays:g('f_maintDays'),campaigns,memo:gt('f_memo')};
   if (editingId) { const idx=lines.findIndex(l=>l.id==editingId); if (idx!==-1) lines[idx]={...lines[idx],...data}; }
   else lines.push({id:Date.now(),...data});
   save(); renderTable(); closeModal();
@@ -1098,7 +1117,7 @@ function printLines() {
   const urgCls=days=>{if (days===null) return ''; if (days<0||days<=7) return 'p-warn'; if (days<=30) return 'p-caution'; return '';};
 
   const cards=sortedLines().map(line=>{
-    const displayName=carrierToName(line.carrier, line.nickname);
+    const displayName=carrierToName(line.carrier, line.nickname, line.carrierOther);
     const sub=[line.contractor?`契約者：${line.contractor}`:'', line.user?`使用者：${line.user}`:''].filter(Boolean).join('　');
 
     // オプション

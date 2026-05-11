@@ -497,7 +497,7 @@ td.cell-actions{padding-right:14px}
         <div class="form-row col2">
           <div class="form-group">
             <label class="form-label">契約日</label>
-            <input class="form-input" type="date" id="f_contractDate" oninput="calcUnlock()">
+            <input class="form-input" type="date" id="f_contractDate" oninput="calcUnlock()" onchange="calcUnlock()">
           </div>
           <div class="form-group">
             <label class="form-label">端末返却日</label>
@@ -860,7 +860,10 @@ function buildOptionList(opts) {
 function updateOptCal(i) {
   const date=document.getElementById(`opt${i}_date`)?.value||'';
   const name=document.getElementById(`opt${i}_name`)?.value||'';
-  const lineName=document.getElementById('f_name')?.value||'';
+  const _carrier=document.getElementById('f_carrier')?.value||'';
+  const _carrierOther=document.getElementById('f_carrier_other')?.value||'';
+  const _nickname=document.getElementById('f_nickname')?.value||'';
+  const lineName=carrierToName(_carrier,_nickname,_carrierOther)||'回線';
   const btn=document.getElementById(`optCal${i}`);
   if (!btn) return;
   if (date) { btn.href=gcalURL(`オプション解約期限`,date,`回線：${lineName}\nオプション：${name}`); btn.classList.remove('disabled'); }
@@ -968,7 +971,10 @@ function calcUnlock() {
   if (!unlockStr) { if (display) display.style.display='none'; return; }
   display.style.display='';
   valEl.textContent=fmtDateJa(unlockStr);
-  const lineName=document.getElementById('f_name')?.value||'';
+  const carrier=document.getElementById('f_carrier')?.value||'';
+  const carrierOther=document.getElementById('f_carrier_other')?.value||'';
+  const nickname=document.getElementById('f_nickname')?.value||'';
+  const lineName=carrierToName(carrier, nickname, carrierOther)||'回線';
   calBtn.href=gcalURL(`MNP解禁日：${lineName}`, unlockStr, `契約日から${days}日経過。この日から乗り換え可能です。`);
 }
 
@@ -996,7 +1002,7 @@ function openModal(id) {
   calcUnlock();
   document.getElementById('overlay').classList.add('open');
   document.body.style.overflow='hidden';
-  setTimeout(()=>document.getElementById('f_name').focus(),150);
+  setTimeout(()=>document.getElementById('f_carrier').focus(),150);
 }
 function closeModal() {
   document.getElementById('overlay').classList.remove('open');

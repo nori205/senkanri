@@ -1,12 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <!-- 黒背景 -->
-  <rect width="512" height="512" rx="80" fill="#2C2A26"/>
-  <!-- SIMカード形（右上コーナーカット） -->
-  <path d="M148,108 L324,108 L388,172 L388,408 Q388,424 372,424 L148,424 Q132,424 132,408 L132,124 Q132,108 148,108 Z" fill="white"/>
-  <!-- senkanri テキスト（小さく赤） -->
-  <text x="260" y="296"
-    text-anchor="middle" dominant-baseline="middle"
+  <rect width="512" height="512" fill="#111"/>
+  <rect x="60" y="60" width="392" height="392" rx="48" fill="#FAF8F4"/>
+  <text x="256" y="148" text-anchor="middle" dominant-baseline="middle"
     font-family="Arial,'Helvetica Neue',sans-serif"
-    font-size="40" font-weight="700" letter-spacing="1"
-    fill="#D04030">senkanri</text>
+    font-size="52" font-weight="900" fill="#E02020">senkanri</text>
+  <rect x="128" y="176" width="256" height="256" rx="32" fill="none" stroke="#111" stroke-width="28"/>
+  <rect x="228" y="264" width="56" height="96" rx="10" fill="#111"/>
 </svg>

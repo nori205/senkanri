@@ -79,8 +79,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP"
 .metric-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .metric-label{font-size:11px;color:var(--text-muted)}
 .metric-badge{font-size:10px;padding:1px 6px;border-radius:3px;font-weight:500}
-.badge-urgent{background:var(--status-urgent-bg);color:var(--status-urgent-text)}
-.badge-warning{background:var(--status-warning-bg);color:var(--status-warning-text)}
+.badge-urgent{background:var(--text-primary);color:var(--bg-page)}
+.badge-warning{background:var(--border-strong);color:var(--text-primary)}
 .metric-count{font-size:22px;font-weight:500;color:var(--text-primary);font-variant-numeric:tabular-nums}
 .metric-count span{font-size:11px;color:var(--text-muted);font-weight:400;margin-left:2px}
 
@@ -115,10 +115,10 @@ td.cell-actions{padding-right:14px}
 
 /* ステータスドット */
 .status-dot{width:6px;height:6px;border-radius:50%}
-.dot-urgent{background:var(--status-urgent-text)}
-.dot-warning{background:var(--status-warning-text)}
-.dot-safe{background:var(--status-safe-text)}
-.dot-neutral{background:var(--border-strong)}
+.dot-urgent{background:var(--text-primary)}
+.dot-warning{background:var(--text-secondary)}
+.dot-safe{background:var(--border-strong)}
+.dot-neutral{background:var(--border-default)}
 
 /* 回線名セル */
 .name-cell-inner{display:flex;align-items:stretch;gap:10px}
@@ -143,11 +143,12 @@ td.cell-actions{padding-right:14px}
 .deadline-date{font-size:11px;color:var(--text-muted)}
 
 /* 残り日数 */
-.days-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:500;font-variant-numeric:tabular-nums}
-.days-urgent{background:var(--status-urgent-bg);color:var(--status-urgent-text)}
-.days-warning{background:var(--status-warning-bg);color:var(--status-warning-text)}
-.days-safe{background:var(--status-safe-bg);color:var(--status-safe-text)}
-.days-neutral{background:var(--status-neutral-bg);color:var(--status-neutral-text)}
+.days-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:500;font-variant-numeric:tabular-nums}
+.days-badge i{font-size:12px}
+.days-urgent{background:var(--text-primary);color:var(--bg-page)}
+.days-warning{background:var(--border-strong);color:var(--text-primary)}
+.days-safe{background:var(--bg-subtle);color:var(--text-secondary)}
+.days-neutral{background:var(--bg-subtle);color:var(--text-muted)}
 
 /* 操作 */
 .action-cell{display:flex;justify-content:flex-end;gap:4px}
@@ -277,11 +278,56 @@ td.cell-actions{padding-right:14px}
   td:first-child{display:none}
   td.cell-name{padding:0 0 8px;border-bottom:.5px solid var(--border-default);margin-bottom:6px}
   td.cell-actions{padding-top:8px;border-top:.5px solid var(--border-default);margin-top:4px}
-  td[data-label]::before{content:attr(data-label);font-size:10px;color:var(--text-muted);display:block;margin-bottom:1px}
+  td[data-label]::before{content:attr(data-label);font-size:13px;color:var(--text-muted);display:block;margin-bottom:1px}
   td.cell-name::before,td.cell-actions::before{content:none}
   .action-cell{justify-content:flex-start}
   .form-row.col2,.form-row.col3{grid-template-columns:1fr}
   .option-row .date-input{width:auto;flex:1}
+  body{font-size:16px}
+  .metric-label{font-size:14px}
+  .metric-badge{font-size:12px}
+  .metric-count{font-size:28px}
+  .metric-count span{font-size:14px}
+  .sort-btn{font-size:13px}
+  .btn-outline{font-size:13px}
+  .btn-primary{font-size:14px}
+  .line-name{font-size:16px}
+  .line-phone{font-size:13px}
+  .header-breadcrumb{font-size:16px}
+  .days-badge{font-size:13px}
+  .days-badge i{font-size:14px}
+  .deadline-kind,.deadline-date{font-size:13px}
+  .form-label{font-size:14px}
+  .section-label{font-size:15px}
+  .icon-btn{width:36px;height:36px;font-size:18px}
+  /* モーダル：下から出るシート型 */
+  .overlay{padding:0;align-items:flex-end}
+  .modal{max-width:100%;max-height:92vh;border-radius:20px 20px 0 0;width:100%}
+  .modal-header{padding:20px 20px 16px}
+  .modal-title{font-size:18px}
+  .modal-close{width:36px;height:36px;font-size:20px}
+  .modal-body{padding:20px}
+  .modal-footer{padding:16px 20px 24px}
+  /* フォーム入力：タッチしやすいサイズ */
+  .form-input,.form-select{height:50px;font-size:16px;padding:0 14px;border-radius:10px}
+  .form-textarea{font-size:16px;padding:14px;border-radius:10px;min-height:90px}
+  .form-row{gap:14px;margin-bottom:16px}
+  .form-section{margin-bottom:28px}
+  .form-group{gap:6px}
+  /* キャンペーンブロック */
+  .campaign-block{padding:16px}
+  .option-num{font-size:14px}
+  .check-label{font-size:14px;gap:8px}
+  .check-label input[type=checkbox]{width:18px;height:18px}
+  .cal-link{width:44px;height:44px;font-size:18px}
+  /* フッターボタン */
+  .btn-primary{height:50px;font-size:17px;padding:0 28px;border-radius:10px}
+  .btn-text{font-size:16px;padding:12px 16px}
+  /* 削除確認ダイアログ */
+  .confirm-box{max-width:100%;border-radius:20px 20px 0 0}
+  .confirm-title{font-size:18px}
+  .confirm-desc{font-size:15px}
+  .btn-danger-text{font-size:16px;padding:10px 16px}
 }
 @media(max-width:479px){
   .content{padding:12px}
@@ -342,7 +388,7 @@ td.cell-actions{padding-right:14px}
       </div>
 
       <!-- 未受取CBバナー -->
-      <div id="unclaimedBanner" style="display:none;background:var(--status-warning-bg);border:.5px solid var(--status-warning-text);border-radius:8px;padding:10px 16px;margin-bottom:16px;font-size:12px;color:var(--status-warning-text);display:flex;align-items:center;gap:8px">
+      <div id="unclaimedBanner" style="display:none;background:var(--bg-subtle);border:.5px solid var(--border-strong);border-radius:8px;padding:10px 16px;margin-bottom:16px;font-size:12px;color:var(--text-secondary);display:flex;align-items:center;gap:8px">
         <i class="ti ti-alert-triangle" style="font-size:15px;flex-shrink:0"></i>
         <span id="unclaimedBannerText"></span>
       </div>
@@ -361,7 +407,6 @@ td.cell-actions{padding-right:14px}
           </label>
           <button class="btn-outline" onclick="exportCSV()"><i class="ti ti-download"></i> CSV出力</button>
           <button class="btn-outline" onclick="printLines()"><i class="ti ti-printer"></i> 印刷</button>
-          <button class="btn-outline" onclick="insertTestData()" style="color:var(--status-warning-text);border-color:var(--status-warning-text)" title="印刷テスト用ダミーデータを4件追加"><i class="ti ti-flask"></i> テスト</button>
         </div>
       </div>
 
@@ -773,7 +818,7 @@ function renderTable() {
       </td>
       <td data-label="使用者">${esc(line.user||line.contractor||'—')}</td>
       <td data-label="次の期限">${nd?`<div class="deadline-kind">${esc(nd.kind)}</div><div class="deadline-date">${esc(nd.label)}</div>`:'<div class="deadline-date">—</div>'}</td>
-      <td data-label="残り">${nd?`<span class="days-badge ${bc}">${esc(daysText)}</span>`:''}</td>
+      <td data-label="残り">${nd?`<span class="days-badge ${bc}"><i class="ti ti-alarm"></i>${esc(daysText)}</span>`:''}</td>
       <td class="cell-actions">
         <div class="action-cell">
           <button class="icon-btn" onclick="openModal('${line.id}')" title="編集"><i class="ti ti-edit"></i></button>

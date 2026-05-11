@@ -606,7 +606,7 @@ function formatPhone(e) {
 }
 
 const defaultOptions  = () => Array.from({length:5}, () => ({name:'', date:'', cancelled:false}));
-const defaultCampaigns= () => Array.from({length:4}, () => ({name:'', contact:'', grantYM:'', grantPeriod:'late', grantSpecificDate:'', amount:'', granted:false}));
+const defaultCampaigns= () => Array.from({length:4}, () => ({name:'', contactPhone:'', contactEmail:'', grantYM:'', grantPeriod:'late', grantSpecificDate:'', amount:'', granted:false}));
 
 // ── ストレージ ──────────────────────────────────
 function load() {
@@ -618,11 +618,17 @@ function load() {
       line.optionDeadlines = line.optionDeadlines.map(o => ({name:o.name||'',date:o.date||'',cancelled:!!o.cancelled}));
       if (!line.campaigns) line.campaigns = defaultCampaigns();
       while (line.campaigns.length < 4) line.campaigns.push(defaultCampaigns()[0]);
-      line.campaigns = line.campaigns.map(c => ({
-        name:c.name||'', contact:c.contact||'', grantYM:c.grantYM||'',
-        grantPeriod:c.grantPeriod||'late', grantSpecificDate:c.grantSpecificDate||'',
-        amount:c.amount||'', granted:!!c.granted
-      }));
+      line.campaigns = line.campaigns.map(c => {
+        // 旧データ（contact単一フィールド）からの移行
+        let cPhone = c.contactPhone||'', cEmail = c.contactEmail||'';
+        if (!cPhone && !cEmail && c.contact) {
+          if (/^\d/.test((c.contact).replace(/-/g,''))) cPhone = c.contact;
+          else cEmail = c.contact;
+        }
+        return {name:c.name||'', contactPhone:cPhone, contactEmail:cEmail, grantYM:c.grantYM||'',
+          grantPeriod:c.grantPeriod||'late', grantSpecificDate:c.grantSpecificDate||'',
+          amount:c.amount||'', granted:!!c.granted};
+      });
       if (!line.carrier)    line.carrier = '';
       if (!line.nickname)   line.nickname = '';
       if (!line.maintDays)  line.maintDays = '';
@@ -888,8 +894,12 @@ function buildCampaignList(camps) {
       <div class="form-row col2">
         <div class="form-group"><label class="form-label">キャンペーン名</label>
           <input class="form-input" type="text" id="camp${i}_name" placeholder="例：乗り換えCB" value="${esc(c.name)}" maxlength="60"></div>
-        <div class="form-group"><label class="form-label">申込電話番号 / メール</label>
-          <input class="form-input" type="text" id="camp${i}_contact" placeholder="090-XXXX / メールアドレス" value="${esc(c.contact)}" maxlength="100" oninput="handleContactInput(this)" autocomplete="off"></div>
+        <div class="form-group"><label class="form-label">申込電話番号</label>
+          <input class="form-input" type="tel" id="camp${i}_contactPhone" placeholder="090-1234-5678" value="${esc(c.contactPhone)}" maxlength="20" oninput="formatPhone(event)" autocomplete="off"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">申込メール</label>
+          <input class="form-input" type="email" id="camp${i}_contactEmail" placeholder="example@gmail.com" value="${esc(c.contactEmail)}" maxlength="100" oninput="handleEmailInput(this)" autocomplete="off"></div>
       </div>
       <div class="form-row col2">
         <div class="form-group"><label class="form-label">付与年月</label>
@@ -1019,6 +1029,18 @@ function selectDomain(value, targetId) {
   hideDomainDropdown();
 }
 
+function handleEmailInput(el) {
+  const v = el.value;
+  const atIdx = v.indexOf('@');
+  if (atIdx >= 0) {
+    const local = v.slice(0, atIdx);
+    const typed = v.slice(atIdx+1).toLowerCase();
+    const hits = EMAIL_DOMAINS.filter(d => d.startsWith(typed) && d !== typed);
+    if (hits.length) { showDomainDropdown(el, hits, local); return; }
+  }
+  hideDomainDropdown();
+}
+
 function hideDomainDropdown() {
   const dd = document.getElementById('domainDropdown');
   if (dd) dd.style.display = 'none';
@@ -1092,7 +1114,7 @@ function saveLine() {
   const nickname     =gt('f_nickname');
   const name         =carrierToName(carrier, nickname, carrierOther);
   const optionDeadlines=Array.from({length:5},(_,i)=>({name:gt(`opt${i}_name`),date:g(`opt${i}_date`),cancelled:gc(`opt${i}_cancelled`)}));
-  const campaigns=Array.from({length:4},(_,i)=>({name:gt(`camp${i}_name`),contact:gt(`camp${i}_contact`),grantYM:g(`camp${i}_grantYM`),grantPeriod:g(`camp${i}_grantPeriod`)||'late',grantSpecificDate:g(`camp${i}_specificDate`),amount:gt(`camp${i}_amount`),granted:gc(`camp${i}_granted`)}));
+  const campaigns=Array.from({length:4},(_,i)=>({name:gt(`camp${i}_name`),contactPhone:gt(`camp${i}_contactPhone`),contactEmail:gt(`camp${i}_contactEmail`),grantYM:g(`camp${i}_grantYM`),grantPeriod:g(`camp${i}_grantPeriod`)||'late',grantSpecificDate:g(`camp${i}_specificDate`),amount:gt(`camp${i}_amount`),granted:gc(`camp${i}_granted`)}));
   const data={name,carrier,carrierOther,nickname,phone:gt('f_phone'),contractor:gt('f_contractor'),user:gt('f_user'),contractDate:g('f_contractDate'),returnDate:g('f_returnDate'),optionDeadlines,maintDays:g('f_maintDays'),campaigns,memo:gt('f_memo')};
   if (editingId) { const idx=lines.findIndex(l=>l.id==editingId); if (idx!==-1) lines[idx]={...lines[idx],...data}; }
   else lines.push({id:Date.now(),...data});
@@ -1121,10 +1143,10 @@ function exportCSV() {
     'オプション④名','オプション④期限','オプション④解約済',
     'オプション⑤名','オプション⑤期限','オプション⑤解約済',
     '維持日数',
-    'キャンペーン①名','キャンペーン①連絡先','キャンペーン①付与年月','キャンペーン①付与時期','キャンペーン①指定日','キャンペーン①金額','キャンペーン①受取済',
-    'キャンペーン②名','キャンペーン②連絡先','キャンペーン②付与年月','キャンペーン②付与時期','キャンペーン②指定日','キャンペーン②金額','キャンペーン②受取済',
-    'キャンペーン③名','キャンペーン③連絡先','キャンペーン③付与年月','キャンペーン③付与時期','キャンペーン③指定日','キャンペーン③金額','キャンペーン③受取済',
-    'キャンペーン④名','キャンペーン④連絡先','キャンペーン④付与年月','キャンペーン④付与時期','キャンペーン④指定日','キャンペーン④金額','キャンペーン④受取済',
+    'キャンペーン①名','キャンペーン①電話番号','キャンペーン①メール','キャンペーン①付与年月','キャンペーン①付与時期','キャンペーン①指定日','キャンペーン①金額','キャンペーン①受取済',
+    'キャンペーン②名','キャンペーン②電話番号','キャンペーン②メール','キャンペーン②付与年月','キャンペーン②付与時期','キャンペーン②指定日','キャンペーン②金額','キャンペーン②受取済',
+    'キャンペーン③名','キャンペーン③電話番号','キャンペーン③メール','キャンペーン③付与年月','キャンペーン③付与時期','キャンペーン③指定日','キャンペーン③金額','キャンペーン③受取済',
+    'キャンペーン④名','キャンペーン④電話番号','キャンペーン④メール','キャンペーン④付与年月','キャンペーン④付与時期','キャンペーン④指定日','キャンペーン④金額','キャンペーン④受取済',
     'メモ'];
   const rows=lines.map(line=>{
     const opts=line.optionDeadlines||defaultOptions();
@@ -1133,7 +1155,7 @@ function exportCSV() {
     return [r(line.name),r(line.phone),r(line.carrier),r(line.contractor),r(line.user),r(line.contractDate),r(line.returnDate),
       ...opts.flatMap(o=>[r(o.name),r(o.date),b(o.cancelled)]),
       r(line.maintDays),
-      ...camps.flatMap(c=>[r(c.name),r(c.contact),r(c.grantYM),r(c.grantPeriod),r(c.grantSpecificDate),r(c.amount),b(c.granted)]),
+      ...camps.flatMap(c=>[r(c.name),r(c.contactPhone),r(c.contactEmail),r(c.grantYM),r(c.grantPeriod),r(c.grantSpecificDate),r(c.amount),b(c.granted)]),
       r(line.memo)];
   });
   const csv=[headers,...rows].map(row=>row.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\r\n');
@@ -1173,8 +1195,8 @@ function importCSV(event) {
           contractDate:get(5),returnDate:get(6),
           optionDeadlines:[0,1,2,3,4].map(i=>({name:get(7+i*3),date:get(8+i*3),cancelled:b(get(9+i*3))})),
           maintDays:get(22),
-          campaigns:[0,1,2,3].map(i=>({name:get(23+i*7),contact:get(24+i*7),grantYM:get(25+i*7),grantPeriod:get(26+i*7)||'late',grantSpecificDate:get(27+i*7),amount:get(28+i*7),granted:b(get(29+i*7))})),
-          memo:get(51)
+          campaigns:[0,1,2,3].map(i=>({name:get(23+i*8),contactPhone:get(24+i*8),contactEmail:get(25+i*8),grantYM:get(26+i*8),grantPeriod:get(27+i*8)||'late',grantSpecificDate:get(28+i*8),amount:get(29+i*8),granted:b(get(30+i*8))})),
+          memo:get(55)
         };
       }).filter(l=>l.name);
       if (!parsed.length) { alert('有効なデータが見つかりませんでした。'); return; }
@@ -1218,7 +1240,8 @@ function printLines() {
         <span class="p-row-label">${esc(c.name)}</span>
         <span class="p-row-value">${esc(label)}${c.amount?` (${esc(c.amount)})`:''}</span>
       </div>
-      ${c.contact?`<div class="p-row"><span class="p-row-label" style="padding-left:12px;color:#888;font-size:7.5px">申込先</span><span class="p-row-value" style="color:#555;font-size:7.5px">${esc(c.contact)}</span></div>`:''}`;
+      ${c.contactPhone?`<div class="p-row"><span class="p-row-label" style="padding-left:12px;color:#888;font-size:7.5px">申込電話</span><span class="p-row-value" style="color:#555;font-size:7.5px">${esc(c.contactPhone)}</span></div>`:''}
+      ${c.contactEmail?`<div class="p-row"><span class="p-row-label" style="padding-left:12px;color:#888;font-size:7.5px">申込メール</span><span class="p-row-value" style="color:#555;font-size:7.5px">${esc(c.contactEmail)}</span></div>`:''}`;
     }).join('');
 
     // MNP解禁日

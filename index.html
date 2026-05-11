@@ -137,6 +137,7 @@ td.cell-actions{padding-right:14px}
 .name-cell-text{display:flex;flex-direction:column;justify-content:center}
 .line-name{font-size:13px;font-weight:500;color:var(--text-primary)}
 .line-phone{font-size:11px;color:var(--text-muted)}
+.line-phone-label{font-size:10px;color:var(--text-muted);margin-right:3px}
 
 /* 期限セル */
 .deadline-kind{font-size:11px;color:var(--text-secondary)}
@@ -300,7 +301,8 @@ td.cell-actions{padding-right:14px}
   .btn-outline{font-size:13px}
   .btn-primary{font-size:14px}
   .line-name{font-size:16px}
-  .line-phone{font-size:13px}
+  .line-phone{font-size:15px;color:var(--text-primary);font-weight:500}
+  .line-phone-label{font-size:12px}
   .header-breadcrumb{font-size:16px}
   .days-badge{font-size:13px}
   .days-badge i{font-size:14px}
@@ -863,7 +865,7 @@ function renderTable() {
           <div class="carrier-bar ${carrierBar(line.carrier)}"></div>
           <div class="name-cell-text">
             <div class="line-name">${esc(displayName)}</div>
-            ${line.phone?`<div class="line-phone">${esc(line.phone)}</div>`:''}
+            ${line.phone?`<div class="line-phone"><span class="line-phone-label">電話番号</span>${esc(line.phone)}</div>`:''}
           </div>
         </div>
       </td>

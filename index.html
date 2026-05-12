@@ -13,41 +13,36 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
 <style>
 :root {
-  --bg-page:    #FAF8F4;
-  --bg-surface: #FFFFFF;
-  --bg-subtle:  #F5F2EC;
-  --bg-hover:   #F0EDE6;
-  --border-default: #E8E3D6;
-  --border-strong:  #D8D3C7;
-  --text-primary:   #2C2A26;
-  --text-secondary: #6B665C;
-  --text-muted:     #8A8478;
-  --status-urgent-bg:    #F5E6E2;
-  --status-urgent-text:  #A23B2C;
-  --status-warning-bg:   #F5EBD8;
-  --status-warning-text: #8B5E1F;
-  --status-safe-bg:      #E8EDE5;
-  --status-safe-text:    #4A6B47;
-  --status-neutral-bg:   #EFEADE;
-  --status-neutral-text: #6B665C;
-  --accent:      #2C2A26;
-  --accent-text: #FAF8F4;
-  --sidebar-w:   56px;
-  --header-h:    60px;
+  --color-bg: #FFF4EA;
+  --color-surface: #FFFFFF;
+  --color-sub: #EDDCC6;
+  --color-accent: #7EACB5;
+  --color-accent-text: #4F7A82;
+  --color-primary: #BF4646;
+  --color-primary-text: #FFFFFF;
+  --color-text: #3D2E2E;
+  --color-text-muted: #B89A9A;
+  --color-text-sub: #8A6B6B;
+  --color-border: rgba(126,172,181,0.2);
+  --color-border-strong: rgba(126,172,181,0.35);
+  --color-badge-bg: #EDDCC6;
+  --color-badge-text: #6B5535;
+  --sidebar-w: 56px;
+  --header-h: 60px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;background:var(--bg-page);color:var(--text-primary);min-height:100vh;font-size:14px;line-height:1.6;font-weight:500}
+body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;background:var(--color-bg);color:var(--color-text);min-height:100vh;font-size:14px;line-height:1.6;font-weight:500}
 
 /* ── レイアウト ── */
 .layout{display:flex;min-height:100vh}
 
 /* ── サイドバー ── */
-.sidebar{width:var(--sidebar-w);background:var(--bg-subtle);border-right:1px solid var(--border-default);position:fixed;top:0;left:0;height:100vh;display:flex;flex-direction:column;align-items:center;padding:12px 0;z-index:100;gap:4px}
-.sidebar-logo{width:36px;height:36px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:"Hiragino Mincho ProN","Yu Mincho",serif;color:var(--accent-text);font-size:16px;font-weight:500;margin-bottom:12px;flex-shrink:0}
+.sidebar{width:var(--sidebar-w);background:var(--color-sub);border-right:1px solid var(--color-border);position:fixed;top:0;left:0;height:100vh;display:flex;flex-direction:column;align-items:center;padding:12px 0;z-index:100;gap:4px}
+.sidebar-logo{width:36px;height:36px;background:var(--color-primary);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:"Hiragino Mincho ProN","Yu Mincho",serif;color:var(--color-primary-text);font-size:16px;font-weight:500;margin-bottom:12px;flex-shrink:0}
 .sidebar-nav{display:flex;flex-direction:column;align-items:center;gap:4px;width:100%}
-.nav-item{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted);transition:background 50ms,color 50ms;border:none;background:transparent;font-size:18px}
-.nav-item.active{background:var(--bg-hover);color:var(--text-primary)}
-.nav-item:hover:not(.disabled){background:var(--bg-hover);color:var(--text-primary)}
+.nav-item{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--color-text-muted);transition:background 50ms,color 50ms;border:none;background:transparent;font-size:18px}
+.nav-item.active{background:var(--color-sub);color:var(--color-text)}
+.nav-item:hover:not(.disabled){background:var(--color-sub);color:var(--color-text)}
 .nav-item:active:not(.disabled){transform:scale(0.98)}
 .nav-item.disabled{opacity:0.35;cursor:default}
 
@@ -55,18 +50,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP"
 .main-wrap{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100vh}
 
 /* ── ヘッダー ── */
-.header{height:var(--header-h);background:var(--bg-subtle);border-bottom:1px solid var(--border-default);display:flex;align-items:center;justify-content:space-between;padding:0 20px;position:sticky;top:0;z-index:90}
+.header{height:var(--header-h);background:var(--color-sub);border-bottom:1px solid var(--color-border);display:flex;align-items:center;justify-content:space-between;padding:0 20px;position:sticky;top:0;z-index:90}
 .header-left{display:flex;flex-direction:column;gap:1px}
-.header-breadcrumb{font-size:13px;font-weight:500;color:var(--text-primary)}
-.header-breadcrumb span{color:var(--text-muted);font-weight:400}
-.header-updated{font-size:11px;color:var(--text-muted)}
+.header-breadcrumb{font-size:13px;font-weight:500;color:var(--color-text)}
+.header-breadcrumb span{color:var(--color-accent);font-weight:400}
+.header-updated{font-size:11px;color:var(--color-text-muted)}
 .header-right{display:flex;align-items:center;gap:10px}
-.search-box{display:flex;align-items:center;gap:6px;border:1px solid var(--border-default);border-radius:6px;padding:0 10px;height:32px;width:180px;background:var(--bg-surface);transition:border-color 150ms}
-.search-box:focus-within{border-color:var(--border-strong);box-shadow:0 0 0 2px rgba(44,42,38,.08)}
-.search-box i{font-size:13px;color:var(--text-muted);flex-shrink:0}
-.search-box input{border:none;outline:none;background:transparent;font-size:12px;color:var(--text-primary);width:100%;font-family:inherit}
-.search-box input::placeholder{color:var(--text-muted)}
-.btn-primary{height:32px;padding:0 14px;background:var(--accent);color:var(--accent-text);border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap;transition:opacity 50ms;font-family:inherit}
+.search-box{display:flex;align-items:center;gap:6px;border:1px solid var(--color-border);border-radius:6px;padding:0 10px;height:32px;width:180px;background:var(--color-surface);transition:border-color 150ms}
+.search-box:focus-within{border-color:var(--color-border-strong);box-shadow:0 0 0 2px rgba(44,42,38,.08)}
+.search-box i{font-size:13px;color:var(--color-text-muted);flex-shrink:0}
+.search-box input{border:none;outline:none;background:transparent;font-size:12px;color:var(--color-text);width:100%;font-family:inherit}
+.search-box input::placeholder{color:var(--color-text-muted)}
+.btn-primary{height:32px;padding:0 14px;background:var(--color-primary);color:var(--color-primary-text);border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap;transition:opacity 50ms;font-family:inherit}
 .btn-primary:hover{opacity:.85}
 .btn-primary:active{transform:scale(0.98)}
 
@@ -75,32 +70,32 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP"
 
 /* ── メトリックカード ── */
 .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
-.metric-card{background:var(--bg-surface);border:.5px solid var(--border-default);border-radius:10px;padding:14px}
+.metric-card{background:var(--color-surface);border:.5px solid var(--color-border);border-radius:10px;padding:14px}
 .metric-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-.metric-label{font-size:11px;color:var(--text-muted)}
+.metric-label{font-size:11px;color:var(--color-text-muted)}
 .metric-badge{font-size:10px;padding:1px 6px;border-radius:3px;font-weight:500}
-.badge-urgent{background:var(--text-primary);color:var(--bg-page)}
-.badge-warning{background:var(--border-strong);color:var(--text-primary)}
-.metric-count{font-size:22px;font-weight:500;color:var(--text-primary);font-variant-numeric:tabular-nums}
-.metric-count span{font-size:11px;color:var(--text-muted);font-weight:400;margin-left:2px}
+.badge-urgent{background:var(--color-text);color:var(--color-bg)}
+.badge-warning{background:var(--color-border-strong);color:var(--color-text)}
+.metric-count{font-size:22px;font-weight:500;color:var(--color-text);font-variant-numeric:tabular-nums}
+.metric-count span{font-size:11px;color:var(--color-text-muted);font-weight:400;margin-left:2px}
 
 /* ── ツールバー ── */
 .toolbar{display:flex;align-items:center;justify-content:space-between;padding:16px 0}
-.sort-group{display:flex;background:var(--bg-subtle);border:1px solid var(--border-default);border-radius:6px;overflow:hidden}
-.sort-btn{padding:0 12px;height:28px;font-size:11px;color:var(--text-secondary);background:transparent;border:none;cursor:pointer;font-family:inherit;transition:background 50ms,color 50ms;white-space:nowrap}
-.sort-btn.active{background:var(--bg-surface);color:var(--text-primary);font-weight:500;box-shadow:0 1px 3px rgba(0,0,0,.08)}
-.sort-btn:hover:not(.active){background:var(--bg-hover)}
+.sort-group{display:flex;background:var(--color-sub);border:1px solid var(--color-border);border-radius:6px;overflow:hidden}
+.sort-btn{padding:0 12px;height:28px;font-size:11px;color:var(--color-text-sub);background:transparent;border:none;cursor:pointer;font-family:inherit;transition:background 50ms,color 50ms;white-space:nowrap}
+.sort-btn.active{background:var(--color-accent);color:#ffffff;font-weight:500}
+.sort-btn:hover:not(.active){background:var(--color-sub)}
 .toolbar-right{display:flex;gap:6px}
-.btn-outline{height:28px;padding:0 10px;border:1px solid var(--border-default);border-radius:5px;background:var(--bg-surface);color:var(--text-secondary);font-size:11px;cursor:pointer;display:flex;align-items:center;gap:4px;font-family:inherit;transition:background 50ms;white-space:nowrap;text-decoration:none}
-.btn-outline:hover{background:var(--bg-hover)}
+.btn-outline{height:28px;padding:0 10px;border:1px solid var(--color-border);border-radius:5px;background:var(--color-surface);color:var(--color-text-sub);font-size:11px;cursor:pointer;display:flex;align-items:center;gap:4px;font-family:inherit;transition:background 50ms;white-space:nowrap;text-decoration:none}
+.btn-outline:hover{background:var(--color-sub)}
 .btn-outline:active{transform:scale(0.98)}
 .btn-outline i{font-size:12px}
 
 /* ── テーブル ── */
-.table-wrap{background:var(--bg-surface);border:.5px solid var(--border-default);border-radius:10px;overflow:hidden}
+.table-wrap{background:var(--color-surface);border:.5px solid var(--color-border);border-radius:10px;overflow:hidden}
 table{width:100%;border-collapse:collapse}
-thead tr{background:var(--bg-subtle);border-bottom:.5px solid var(--border-default)}
-th{padding:8px;font-size:10px;font-weight:500;color:var(--text-muted);letter-spacing:.05em;text-align:left}
+thead tr{background:var(--color-sub);border-bottom:.5px solid var(--color-border)}
+th{padding:8px;font-size:10px;font-weight:500;color:var(--color-text-muted);letter-spacing:.05em;text-align:left}
 th:first-child{width:28px;padding-left:14px}
 th.col-actions{text-align:right;padding-right:14px;width:90px}
 th.col-user{width:70px}
@@ -108,99 +103,90 @@ th.col-deadline{width:150px}
 th.col-days{width:80px}
 tbody tr{border-bottom:.5px solid #F0F0F0;transition:background 80ms}
 tbody tr:last-child{border-bottom:none}
-tbody tr:hover{background:var(--bg-hover)}
+tbody tr:hover{background:var(--color-sub)}
 td{padding:12px 8px;vertical-align:middle}
 td:first-child{padding-left:14px}
 td.cell-actions{padding-right:14px}
 
 /* ステータスドット */
 .status-dot{width:6px;height:6px;border-radius:50%}
-.dot-urgent{background:var(--text-primary)}
-.dot-warning{background:var(--text-secondary)}
-.dot-safe{background:var(--border-strong)}
-.dot-neutral{background:var(--border-default)}
+.dot-urgent{background:var(--color-primary)}
+.dot-warning{background:var(--color-text-sub)}
+.dot-safe{background:var(--color-border-strong)}
+.dot-neutral{background:var(--color-border)}
 
 /* 回線名セル */
 .name-cell-inner{display:flex;align-items:stretch;gap:10px}
 .carrier-bar{width:3px;border-radius:2px;flex-shrink:0;align-self:stretch}
-.carrier-rakuten{background:#8B3333}
-.carrier-docomo{background:#8B3A4F}
-.carrier-ahamo{background:#3A6B8B}
-.carrier-au{background:#996633}
-.carrier-uq{background:#7A6B33}
-.carrier-povo{background:#B07A30}
-.carrier-softbank{background:#2E6B8C}
-.carrier-ymobile{background:#3A7A8B}
-.carrier-linemo{background:#4A8B6B}
-.carrier-other{background:#888}
-.carrier-none{background:var(--border-default)}
+.carrier-rakuten,.carrier-docomo,.carrier-ahamo,.carrier-au,.carrier-uq,.carrier-povo,.carrier-softbank,.carrier-ymobile,.carrier-linemo,.carrier-other{background:var(--color-primary)}
+.carrier-none{background:var(--color-border)}
 .name-cell-text{display:flex;flex-direction:column;justify-content:center}
-.line-name{font-size:13px;font-weight:500;color:var(--text-primary)}
-.line-phone{font-size:11px;color:var(--text-muted)}
-.line-phone-label{font-size:10px;color:var(--text-muted);margin-right:3px}
+.line-name{font-size:13px;font-weight:500;color:var(--color-text)}
+.line-phone{font-size:11px;color:var(--color-text-muted)}
+.line-phone-label{font-size:10px;color:var(--color-text-muted);margin-right:3px}
 
 /* 期限セル */
-.deadline-kind{font-size:11px;color:var(--text-secondary)}
-.deadline-date{font-size:11px;color:var(--text-muted)}
+.deadline-kind{font-size:11px;color:var(--color-text-sub)}
+.deadline-date{font-size:11px;color:var(--color-text-muted)}
 
 /* 全期限リスト（モバイル切替） */
 .deadline-desktop{display:block}
 .deadline-mobile-list{display:none}
-.dl-item{display:flex;align-items:center;gap:8px;padding:5px 0}
-.dl-item:not(:last-child){border-bottom:.5px solid var(--border-default)}
-.dl-name{font-size:12px;color:var(--text-secondary);flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
-.dl-date{font-size:10px;color:var(--text-muted)}
+.dl-item{display:flex;align-items:center;gap:12px;padding:11px 0}
+.dl-item:not(:last-child){border-bottom:.5px solid var(--color-border)}
+.dl-name{font-size:15px;font-weight:600;color:var(--color-text);width:95px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:0}
+.dl-date{font-size:15px;font-weight:500;color:var(--color-text-sub);margin:0;flex:1}
 
 /* 残り日数 */
-.days-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:500;font-variant-numeric:tabular-nums}
-.days-badge i{font-size:12px}
-.days-urgent{background:var(--text-primary);color:var(--bg-page)}
-.days-warning{background:var(--border-strong);color:var(--text-primary)}
-.days-safe{background:var(--bg-subtle);color:var(--text-secondary)}
-.days-neutral{background:var(--bg-subtle);color:var(--text-muted)}
+.days-badge{display:inline-flex;align-items:center;gap:4px;padding:5px 12px;border-radius:7px;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
+.days-badge i{font-size:13px}
+.days-urgent{background:var(--color-primary);color:var(--color-primary-text)}
+.days-warning{background:var(--color-badge-bg);color:var(--color-badge-text)}
+.days-safe{background:var(--color-badge-bg);color:var(--color-badge-text)}
+.days-neutral{background:var(--color-badge-bg);color:var(--color-badge-text)}
 
 /* キャンペーンチップ（モバイルカード用） */
 .cell-camps{display:none}
 .card-camps{display:flex;flex-wrap:wrap;gap:6px}
-.camp-chip{display:inline-flex;align-items:center;gap:4px;font-size:12px;padding:3px 9px;border-radius:4px;border:.5px solid var(--border-default);background:var(--bg-subtle);color:var(--text-secondary)}
-.camp-chip.granted{color:var(--text-muted);text-decoration:line-through;background:transparent}
+.camp-chip{display:inline-flex;align-items:center;gap:4px;font-size:12px;padding:3px 9px;border-radius:4px;border:.5px solid var(--color-border);background:var(--color-sub);color:var(--color-text-sub)}
+.camp-chip.granted{color:var(--color-text-muted);text-decoration:line-through;background:transparent}
 .camp-chip i{font-size:11px}
 
 /* 操作 */
 .action-cell{display:flex;justify-content:flex-end;gap:4px}
-.icon-btn{width:26px;height:26px;border:1px solid var(--border-default);border-radius:4px;background:var(--bg-surface);color:var(--text-secondary);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:background 50ms,color 50ms}
-.icon-btn:hover{background:var(--bg-hover);color:var(--text-primary)}
+.icon-btn{width:26px;height:26px;border:1px solid var(--color-border);border-radius:4px;background:var(--color-surface);color:var(--color-text-sub);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:background 50ms,color 50ms}
+.icon-btn:hover{background:var(--color-sub);color:var(--color-text)}
 .icon-btn:active{transform:scale(0.98)}
 
 /* ── 空状態 ── */
 .empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;text-align:center}
-.empty-icon{font-size:32px;color:var(--text-muted);margin-bottom:16px}
-.empty-title{font-size:14px;color:var(--text-primary);margin-bottom:6px}
-.empty-desc{font-size:12px;color:var(--text-muted);line-height:1.7;margin-bottom:20px}
+.empty-icon{font-size:32px;color:var(--color-text-muted);margin-bottom:16px}
+.empty-title{font-size:14px;color:var(--color-text);margin-bottom:6px}
+.empty-desc{font-size:12px;color:var(--color-text-muted);line-height:1.7;margin-bottom:20px}
 
 /* ── モーダル ── */
 .overlay{display:none;position:fixed;inset:0;background:rgba(44,42,38,.4);z-index:200;align-items:center;justify-content:center;padding:20px}
 .overlay.open{display:flex}
-.modal{background:var(--bg-surface);border-radius:12px;width:100%;max-width:540px;max-height:90vh;overflow-y:auto;box-shadow:0 8px 40px rgba(44,42,38,.2);opacity:0;transform:translateY(8px);transition:opacity 150ms,transform 150ms}
+.modal{background:var(--color-surface);border-radius:12px;width:100%;max-width:540px;max-height:90vh;overflow-y:auto;box-shadow:0 8px 40px rgba(44,42,38,.2);opacity:0;transform:translateY(8px);transition:opacity 150ms,transform 150ms}
 .overlay.open .modal{opacity:1;transform:translateY(0)}
-.modal-header{padding:18px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border-default);position:sticky;top:0;background:var(--bg-surface);z-index:1}
-.modal-title{font-size:14px;font-weight:500;color:var(--text-primary)}
-.modal-close{width:28px;height:28px;border:none;background:transparent;color:var(--text-muted);cursor:pointer;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:16px;transition:background 50ms}
-.modal-close:hover{background:var(--bg-hover)}
+.modal-header{padding:18px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--color-border);position:sticky;top:0;background:var(--color-surface);z-index:1}
+.modal-title{font-size:14px;font-weight:500;color:var(--color-text)}
+.modal-close{width:28px;height:28px;border:none;background:transparent;color:var(--color-text-muted);cursor:pointer;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:16px;transition:background 50ms}
+.modal-close:hover{background:var(--color-sub)}
 .modal-body{padding:20px}
-.modal-footer{padding:14px 20px;border-top:1px solid var(--border-default);display:flex;align-items:center;justify-content:flex-end;gap:10px;position:sticky;bottom:0;background:var(--bg-surface)}
+.modal-footer{padding:14px 20px;border-top:1px solid var(--color-border);display:flex;align-items:center;justify-content:flex-end;gap:10px;position:sticky;bottom:0;background:var(--color-surface)}
 
 /* フォーム */
 .form-section{margin-bottom:22px}
-.section-label{font-size:12px;font-weight:500;color:var(--text-muted);margin-bottom:12px;padding-bottom:7px;border-bottom:1px solid var(--border-default)}
+.section-label{font-size:12px;font-weight:500;color:var(--color-text-muted);margin-bottom:12px;padding-bottom:7px;border-bottom:1px solid var(--color-border)}
 .form-row{display:grid;gap:10px;margin-bottom:12px}
 .form-row:last-child{margin-bottom:0}
 .col2{grid-template-columns:1fr 1fr}
 .col3{grid-template-columns:1fr 1fr 1fr}
 .form-group{display:flex;flex-direction:column;gap:4px}
-.form-label{font-size:11px;color:var(--text-muted)}
-.form-input,.form-select,.form-textarea{height:36px;border:.5px solid var(--border-default);border-radius:6px;padding:0 10px;font-size:13px;font-family:inherit;color:var(--text-primary);background:var(--bg-surface);outline:none;transition:border-color 150ms,box-shadow 150ms;-webkit-appearance:none}
-.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--border-strong);box-shadow:0 0 0 2px rgba(44,42,38,.1)}
+.form-label{font-size:11px;color:var(--color-text-muted)}
+.form-input,.form-select,.form-textarea{height:36px;border:.5px solid var(--color-border);border-radius:6px;padding:0 10px;font-size:13px;font-family:inherit;color:var(--color-text);background:var(--color-surface);outline:none;transition:border-color 150ms,box-shadow 150ms;-webkit-appearance:none}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--color-border-strong);box-shadow:0 0 0 2px rgba(44,42,38,.1)}
 .form-input.error{border-color:var(--status-urgent-text);box-shadow:0 0 0 2px rgba(162,59,44,.12)}
 .form-textarea{height:auto;min-height:68px;padding:8px 10px;resize:vertical;line-height:1.5}
 .form-select{cursor:pointer}
@@ -208,38 +194,38 @@ td.cell-actions{padding-right:14px}
 /* オプション行 */
 .option-list{display:flex;flex-direction:column;gap:8px;margin-bottom:4px}
 .option-row{display:flex;align-items:center;gap:7px}
-.option-num{font-size:11px;color:var(--text-muted);width:14px;flex-shrink:0;text-align:center}
+.option-num{font-size:11px;color:var(--color-text-muted);width:14px;flex-shrink:0;text-align:center}
 .option-row .form-input{flex:1;min-width:0}
 .option-row .date-input{width:138px;flex:none}
-.check-label{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text-muted);cursor:pointer;flex-shrink:0;white-space:nowrap;user-select:none}
-.check-label input[type=checkbox]{accent-color:var(--accent);cursor:pointer}
-.cal-link{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border:1px solid var(--border-default);border-radius:4px;background:var(--bg-surface);color:var(--text-muted);cursor:pointer;font-size:13px;flex-shrink:0;transition:background 50ms,color 50ms;text-decoration:none}
-.cal-link:hover{background:var(--bg-hover);color:var(--text-primary)}
+.check-label{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--color-text-muted);cursor:pointer;flex-shrink:0;white-space:nowrap;user-select:none}
+.check-label input[type=checkbox]{accent-color:var(--color-primary);cursor:pointer}
+.cal-link{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border:1px solid var(--color-border);border-radius:4px;background:var(--color-surface);color:var(--color-text-muted);cursor:pointer;font-size:13px;flex-shrink:0;transition:background 50ms,color 50ms;text-decoration:none}
+.cal-link:hover{background:var(--color-sub);color:var(--color-text)}
 .cal-link.disabled{opacity:.35;pointer-events:none}
 
 /* キャンペーンブロック */
-.campaign-block{border:.5px solid var(--border-default);border-radius:8px;padding:12px;margin-bottom:10px}
+.campaign-block{border:.5px solid var(--color-border);border-radius:8px;padding:12px;margin-bottom:10px}
 .campaign-block:last-child{margin-bottom:0}
 .campaign-block-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-.campaign-num{font-size:11px;color:var(--text-muted);font-weight:500}
+.campaign-num{font-size:11px;color:var(--color-text-muted);font-weight:500}
 
 /* 維持期間 */
-.unlock-display{background:var(--bg-subtle);border-radius:6px;padding:10px 14px;font-size:12px;color:var(--text-secondary);margin-top:8px;display:flex;align-items:center;justify-content:space-between;gap:12px}
-.unlock-date-val{font-size:15px;font-weight:500;color:var(--text-primary)}
-.cal-link-text{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--text-secondary);text-decoration:none;padding:4px 8px;border:1px solid var(--border-default);border-radius:4px;background:var(--bg-surface);white-space:nowrap;transition:background 50ms}
-.cal-link-text:hover{background:var(--bg-hover)}
+.unlock-display{background:var(--color-sub);border-radius:6px;padding:10px 14px;font-size:12px;color:var(--color-text-sub);margin-top:8px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.unlock-date-val{font-size:15px;font-weight:500;color:var(--color-text)}
+.cal-link-text{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--color-text-sub);text-decoration:none;padding:4px 8px;border:1px solid var(--color-border);border-radius:4px;background:var(--color-surface);white-space:nowrap;transition:background 50ms}
+.cal-link-text:hover{background:var(--color-sub)}
 
 /* テキストボタン */
-.btn-text{background:none;border:none;color:var(--text-muted);font-size:13px;cursor:pointer;padding:6px 10px;border-radius:5px;font-family:inherit;transition:background 50ms}
-.btn-text:hover{background:var(--bg-hover)}
+.btn-text{background:none;border:none;color:var(--color-text-muted);font-size:13px;cursor:pointer;padding:6px 10px;border-radius:5px;font-family:inherit;transition:background 50ms}
+.btn-text:hover{background:var(--color-sub)}
 
 
 /* 削除確認 */
-.confirm-box{background:var(--bg-surface);border-radius:10px;padding:24px 20px;width:100%;max-width:320px;box-shadow:0 8px 40px rgba(44,42,38,.2);opacity:0;transform:translateY(8px);transition:opacity 150ms,transform 150ms}
+.confirm-box{background:var(--color-surface);border-radius:10px;padding:24px 20px;width:100%;max-width:320px;box-shadow:0 8px 40px rgba(44,42,38,.2);opacity:0;transform:translateY(8px);transition:opacity 150ms,transform 150ms}
 .overlay.open .confirm-box{opacity:1;transform:translateY(0)}
 .confirm-title{font-size:14px;font-weight:500;margin-bottom:6px}
-.confirm-desc{font-size:12px;color:var(--text-muted);margin-bottom:20px;line-height:1.6}
-.confirm-name{font-weight:500;color:var(--text-primary)}
+.confirm-desc{font-size:12px;color:var(--color-text-muted);margin-bottom:20px;line-height:1.6}
+.confirm-name{font-weight:500;color:var(--color-text)}
 .confirm-actions{display:flex;gap:8px;justify-content:flex-end}
 .btn-danger-text{background:none;border:none;color:var(--status-urgent-text);font-size:13px;font-weight:500;font-family:inherit;cursor:pointer;padding:6px 10px;border-radius:5px;transition:background 50ms}
 .btn-danger-text:hover{background:var(--status-urgent-bg)}
@@ -281,7 +267,7 @@ td.cell-actions{padding-right:14px}
 @media(max-width:768px){
   :root{--sidebar-w:0px}
   .sidebar{display:none}
-  .mobile-tabbar{display:flex;position:fixed;bottom:0;left:0;right:0;height:56px;background:var(--bg-subtle);border-top:1px solid var(--border-default);z-index:100;justify-content:space-around;align-items:center}
+  .mobile-tabbar{display:flex;position:fixed;bottom:0;left:0;right:0;height:56px;background:var(--color-sub);border-top:1px solid var(--color-border);z-index:100;justify-content:space-around;align-items:center}
   .main-wrap{margin-left:0;padding-bottom:56px}
   .metrics{grid-template-columns:repeat(2,1fr)}
   .search-box{display:none}
@@ -289,15 +275,15 @@ td.cell-actions{padding-right:14px}
   .table-wrap{background:transparent;border:none;border-radius:0}
   table,thead,tbody,th,td,tr{display:block}
   thead{display:none}
-  tbody tr{background:var(--bg-surface);border:.5px solid var(--border-default);border-radius:8px;margin-bottom:10px;padding:12px 14px}
-  tbody tr:hover{background:var(--bg-surface)}
+  tbody tr{background:var(--color-surface);border:.5px solid var(--color-border);border-radius:8px;margin-bottom:10px;padding:12px 14px}
+  tbody tr:hover{background:var(--color-surface)}
   td{padding:3px 0;border:none}
   td:first-child{display:none}
-  td.cell-name{padding:0 0 8px;border-bottom:.5px solid var(--border-default);margin-bottom:6px}
-  td.cell-actions{padding-top:8px;border-top:.5px solid var(--border-default);margin-top:4px}
-  td[data-label]::before{content:attr(data-label);font-size:13px;color:var(--text-muted);display:block;margin-bottom:1px}
+  td.cell-name{padding:0 0 8px;border-bottom:.5px solid var(--color-border);margin-bottom:6px}
+  td.cell-actions{padding-top:8px;border-top:.5px solid var(--color-border);margin-top:4px}
+  td[data-label]::before{content:attr(data-label);font-size:13px;color:var(--color-text-muted);display:block;margin-bottom:1px}
   td.cell-name::before,td.cell-actions::before,td.cell-camps::before{content:none}
-  td.cell-camps{display:block;padding-top:6px;border-top:.5px solid var(--border-default);margin-top:4px}
+  td.cell-camps{display:block;padding-top:6px;border-top:.5px solid var(--color-border);margin-top:4px}
   .camp-chip{font-size:13px;padding:4px 11px}
   .camp-chip i{font-size:12px}
   .action-cell{justify-content:flex-start}
@@ -310,24 +296,23 @@ td.cell-actions{padding-right:14px}
   .metric-count span{font-size:14px}
   .sort-btn{font-size:13px}
   .btn-outline{font-size:13px}
-  .btn-primary{font-size:14px}
-  .line-name{font-size:16px}
-  .line-phone{font-size:15px;color:var(--text-primary);font-weight:500}
+  .btn-primary{font-size:14px;font-weight:600}
+  .line-name{font-size:17px;font-weight:700}
+  .line-phone{font-size:13px;color:var(--color-text-sub);font-weight:400}
   .line-phone-label{font-size:12px}
-  .header-breadcrumb{font-size:16px}
-  .days-badge{font-size:13px}
-  .days-badge i{font-size:14px}
+  .header-breadcrumb{font-size:17px;font-weight:600}
+  .header-breadcrumb span{font-size:17px;font-weight:400}
+  .days-badge{font-size:13px;font-weight:700}
+  .days-badge i{font-size:13px}
   .deadline-desktop{display:none}
   .deadline-mobile-list{display:block}
   td[data-label="残り"]{display:none}
   td.cell-deadline::before{content:none}
-  .dl-name{font-size:14px}
-  .dl-date{font-size:12px}
-  .dl-item{padding:8px 0}
+  .dl-item{padding:11px 0}
   .deadline-kind,.deadline-date{font-size:13px}
   .form-label{font-size:14px}
   .section-label{font-size:15px}
-  .icon-btn{width:36px;height:36px;font-size:18px}
+  .icon-btn{width:34px;height:34px;font-size:17px}
   /* モーダル：下から出るシート型 */
   .overlay{padding:0;align-items:flex-end}
   .modal{max-width:100%;max-height:92vh;border-radius:20px 20px 0 0;width:100%}
@@ -349,7 +334,7 @@ td.cell-actions{padding-right:14px}
   .check-label input[type=checkbox]{width:18px;height:18px}
   .cal-link{width:44px;height:44px;font-size:18px}
   /* フッターボタン */
-  .btn-primary{height:50px;font-size:17px;padding:0 28px;border-radius:10px}
+  .btn-primary{height:50px;font-size:16px;padding:0 28px;border-radius:10px}
   .btn-text{font-size:16px;padding:12px 16px}
   /* 削除確認ダイアログ */
   .confirm-box{max-width:100%;border-radius:20px 20px 0 0}
@@ -360,6 +345,27 @@ td.cell-actions{padding-right:14px}
 @media(max-width:479px){
   .content{padding:12px}
   .header{padding:0 12px}
+  .dl-name{width:85px}
+}
+
+/* ── パレットボタン・ポップアップ ── */
+.palette-btn{width:36px;height:36px;background:var(--color-surface);border:.5px solid var(--color-border-strong);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--color-accent);font-size:18px;transition:opacity 50ms;flex-shrink:0}
+.palette-btn:hover{opacity:.8}
+.palette-btn:active{transform:scale(0.97)}
+.palette-popup{position:fixed;top:64px;right:20px;width:260px;padding:14px;border-radius:14px;background:var(--color-surface);border:.5px solid var(--color-border-strong);box-shadow:0 4px 12px rgba(0,0,0,0.08);z-index:200}
+.palette-popup-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.palette-popup-title{font-size:13px;font-weight:600;color:var(--color-text)}
+.palette-close-btn{background:none;border:none;cursor:pointer;color:var(--color-text-muted);font-size:16px;padding:2px;display:flex;align-items:center;justify-content:center;border-radius:4px}
+.palette-close-btn:hover{background:var(--color-sub)}
+.preset-item{display:flex;align-items:center;gap:10px;padding:8px 6px;border-radius:8px;cursor:pointer;transition:background 80ms}
+.preset-item:hover{background:var(--color-sub)}
+.preset-item.selected{background:rgba(0,0,0,0.04)}
+.preset-dots{display:flex;gap:3px;flex-shrink:0}
+.preset-dot{width:14px;height:14px;border-radius:50%;border:.5px solid rgba(0,0,0,0.08)}
+.preset-name{font-size:13px;color:var(--color-text);flex:1}
+.preset-check{font-size:14px;color:var(--color-accent)}
+@media(max-width:768px){
+  .palette-popup{right:12px}
 }
 </style>
 </head>
@@ -391,6 +397,9 @@ td.cell-actions{padding-right:14px}
           <i class="ti ti-search"></i>
           <input type="text" placeholder="回線名・番号で検索" id="searchInput" oninput="renderTable()">
         </div>
+        <button class="palette-btn" aria-label="カラー変更" onclick="togglePalettePopup()">
+          <i class="ti ti-palette"></i>
+        </button>
         <button class="btn-primary" onclick="openModal()"><i class="ti ti-plus"></i> 追加</button>
       </div>
     </header>
@@ -399,7 +408,7 @@ td.cell-actions{padding-right:14px}
       <!-- メトリックカード -->
 
       <!-- 未受取CBバナー -->
-      <div id="unclaimedBanner" style="display:none;background:var(--bg-subtle);border:.5px solid var(--border-strong);border-radius:8px;padding:10px 16px;margin-bottom:16px;font-size:12px;color:var(--text-secondary);display:flex;align-items:center;gap:8px">
+      <div id="unclaimedBanner" style="display:none;background:var(--color-sub);border:.5px solid var(--color-border-strong);border-radius:8px;padding:10px 16px;margin-bottom:16px;font-size:12px;color:var(--color-text-sub);display:flex;align-items:center;gap:8px">
         <i class="ti ti-alert-triangle" style="font-size:15px;flex-shrink:0"></i>
         <span id="unclaimedBannerText"></span>
       </div>
@@ -536,7 +545,7 @@ td.cell-actions{padding-right:14px}
             <div id="unlockDisplay" style="display:none;width:100%">
               <div class="unlock-display">
                 <div>
-                  <div style="font-size:11px;color:var(--text-muted)">MNP解禁日</div>
+                  <div style="font-size:11px;color:var(--color-text-muted)">MNP解禁日</div>
                   <div class="unlock-date-val" id="unlockDateVal">—</div>
                 </div>
                 <a class="cal-link-text" id="unlockCalBtn" href="#" target="_blank" rel="noopener">
@@ -569,6 +578,15 @@ td.cell-actions{padding-right:14px}
   </div>
 </div>
 
+<!-- パレットポップアップ -->
+<div id="palettePopup" class="palette-popup" style="display:none">
+  <div class="palette-popup-header">
+    <div class="palette-popup-title">テーマカラー</div>
+    <button class="palette-close-btn" onclick="closePalettePopup()"><i class="ti ti-x"></i></button>
+  </div>
+  <div class="preset-list"></div>
+</div>
+
 <!-- 削除確認モーダル -->
 <div class="overlay" id="confirmOverlay" onclick="handleConfirmOverlayClick(event)">
   <div class="confirm-box">
@@ -582,6 +600,131 @@ td.cell-actions{padding-right:14px}
 </div>
 
 <script>
+// ── カラーテーマ ──────────────────────────────────
+const COLOR_PRESETS = {
+  red_blue: {
+    name:'赤 × 水色',
+    bg:'#FFF4EA', surface:'#FFFFFF', sub:'#EDDCC6',
+    accent:'#7EACB5', accentText:'#4F7A82',
+    primary:'#BF4646', primaryText:'#FFFFFF',
+    text:'#3D2E2E', textMuted:'#B89A9A', textSub:'#8A6B6B',
+    border:'rgba(126,172,181,0.2)', borderStrong:'rgba(126,172,181,0.35)',
+    badgeBg:'#EDDCC6', badgeText:'#6B5535',
+    dots:['#FFF4EA','#EDDCC6','#7EACB5','#BF4646'],
+  },
+  purple: {
+    name:'パープル',
+    bg:'#F2EAE0', surface:'#FFFFFF', sub:'#B4D3D9',
+    accent:'#BDA6CE', accentText:'#6B5B95',
+    primary:'#9B8EC7', primaryText:'#FFFFFF',
+    text:'#3D2E5E', textMuted:'#A89BC4', textSub:'#8A7BAF',
+    border:'rgba(155,142,199,0.18)', borderStrong:'rgba(155,142,199,0.3)',
+    badgeBg:'#F2EAE0', badgeText:'#6B5B95',
+    dots:['#F2EAE0','#B4D3D9','#BDA6CE','#9B8EC7'],
+  },
+  mint_lemon: {
+    name:'ミント × レモン',
+    bg:'#F5F7E8', surface:'#FFFFFF', sub:'#B8D9B8',
+    accent:'#5FA67A', accentText:'#3D5A3D',
+    primary:'#F5DC5C', primaryText:'#7A5A1A',
+    text:'#2E3D2E', textMuted:'#A8B89A', textSub:'#7A8A6B',
+    border:'rgba(95,166,122,0.2)', borderStrong:'rgba(95,166,122,0.35)',
+    badgeBg:'#B8D9B8', badgeText:'#2E5A3D',
+    dots:['#F5F7E8','#B8D9B8','#5FA67A','#F5DC5C'],
+  },
+  navy_pink: {
+    name:'ネイビー × ピンク',
+    bg:'#F5EDED', surface:'#FFFFFF', sub:'#F0CFD4',
+    accent:'#E8869C', accentText:'#8A4A5A',
+    primary:'#3D4A6B', primaryText:'#FFFFFF',
+    text:'#3D2E3D', textMuted:'#B89AA0', textSub:'#8A5A6B',
+    border:'rgba(61,74,107,0.15)', borderStrong:'rgba(61,74,107,0.3)',
+    badgeBg:'#F0CFD4', badgeText:'#8A4A5A',
+    dots:['#F5EDED','#F0CFD4','#E8869C','#3D4A6B'],
+  },
+  dark: {
+    name:'ダーク',
+    bg:'#1A1A1F', surface:'#2D2D35', sub:'#4A4A55',
+    accent:'#4A4A55', accentText:'#D4D4D4',
+    primary:'#FF7A1A', primaryText:'#FFFFFF',
+    text:'#F0F0F0', textMuted:'#888892', textSub:'#A8A8B0',
+    border:'rgba(255,255,255,0.08)', borderStrong:'rgba(255,255,255,0.15)',
+    badgeBg:'#3A3A45', badgeText:'#D4D4D4',
+    dots:['#1A1A1F','#4A4A55','#4A4A55','#FF7A1A'],
+  },
+};
+
+let currentTheme = 'red_blue';
+
+function applyTheme(presetKey) {
+  const preset = COLOR_PRESETS[presetKey];
+  if (!preset) return;
+  const root = document.documentElement;
+  root.style.setProperty('--color-bg', preset.bg);
+  root.style.setProperty('--color-surface', preset.surface);
+  root.style.setProperty('--color-sub', preset.sub);
+  root.style.setProperty('--color-accent', preset.accent);
+  root.style.setProperty('--color-accent-text', preset.accentText);
+  root.style.setProperty('--color-primary', preset.primary);
+  root.style.setProperty('--color-primary-text', preset.primaryText);
+  root.style.setProperty('--color-text', preset.text);
+  root.style.setProperty('--color-text-muted', preset.textMuted);
+  root.style.setProperty('--color-text-sub', preset.textSub);
+  root.style.setProperty('--color-border', preset.border);
+  root.style.setProperty('--color-border-strong', preset.borderStrong);
+  root.style.setProperty('--color-badge-bg', preset.badgeBg);
+  root.style.setProperty('--color-badge-text', preset.badgeText);
+  currentTheme = presetKey;
+  localStorage.setItem('selectedTheme', presetKey);
+  renderPaletteItems();
+}
+
+function renderPaletteItems() {
+  const listEl = document.querySelector('.preset-list');
+  if (!listEl) return;
+  listEl.innerHTML = Object.entries(COLOR_PRESETS).map(([key, preset]) => {
+    const isActive = key === currentTheme;
+    const dots = preset.dots.map(c => `<span class="preset-dot" style="background:${c}"></span>`).join('');
+    return `<div class="preset-item${isActive?' selected':''}" onclick="selectTheme('${key}')">
+      <div class="preset-dots">${dots}</div>
+      <span class="preset-name">${preset.name}</span>
+      ${isActive?'<i class="ti ti-check preset-check"></i>':''}
+    </div>`;
+  }).join('');
+}
+
+function selectTheme(key) {
+  applyTheme(key);
+  closePalettePopup();
+}
+
+function togglePalettePopup() {
+  const popup = document.getElementById('palettePopup');
+  if (!popup) return;
+  if (popup.style.display === 'block') {
+    closePalettePopup();
+  } else {
+    renderPaletteItems();
+    popup.style.display = 'block';
+  }
+}
+
+function closePalettePopup() {
+  const popup = document.getElementById('palettePopup');
+  if (popup) popup.style.display = 'none';
+}
+
+document.addEventListener('click', function(e) {
+  const popup = document.getElementById('palettePopup');
+  const btn = document.querySelector('.palette-btn');
+  if (popup && popup.style.display === 'block') {
+    if (!popup.contains(e.target) && (!btn || !btn.contains(e.target))) {
+      closePalettePopup();
+    }
+  }
+});
+
+// ── データ ───────────────────────────────────────
 const STORAGE_KEY = 'kaisenkanri_v2';
 let lines = [];
 let editingId = null;
@@ -868,9 +1011,9 @@ function renderTable() {
           const u2=urgency(dl.days);
           const bc2=daysClass[u2]||'days-neutral';
           const dtxt2=dl.days<0?'期限切れ':`${dl.days}日`;
-          return `<div class="dl-item"><span class="dl-name">${esc(dl.kind)}<span class="dl-date">${esc(dl.label)}</span></span><span class="days-badge ${bc2}"><i class="ti ti-alarm"></i>${dtxt2}</span></div>`;
+          return `<div class="dl-item"><span class="dl-name">${esc(dl.kind)}</span><span class="dl-date">${esc(dl.label)}</span><span class="days-badge ${bc2}"><i class="ti ti-alarm"></i>${dtxt2}</span></div>`;
         }).join('')
-      : `<div class="dl-item"><span class="dl-name" style="color:var(--text-muted)">—</span></div>`;
+      : `<div class="dl-item"><span class="dl-name" style="color:var(--color-text-muted)">—</span></div>`;
     return `<tr>
       <td><div class="status-dot ${dc}"></div></td>
       <td class="cell-name">
@@ -1485,6 +1628,8 @@ if ('serviceWorker' in navigator) {
 }
 
 // ── 初期化 ──────────────────────────────────────
+const _savedTheme = localStorage.getItem('selectedTheme') || 'red_blue';
+applyTheme(_savedTheme);
 migrateFromV1();
 load();
 renderTable();

@@ -512,7 +512,7 @@ td.cell-actions{padding-right:14px}
         <div class="form-row col2">
           <div class="form-group">
             <label class="form-label">電話番号</label>
-            <input class="form-input" type="tel" id="f_phone" placeholder="090-1234-5678" maxlength="20">
+            <input class="form-input" type="text" inputmode="tel" id="f_phone" placeholder="090-1234-5678" maxlength="20" autocomplete="tel" autocorrect="off" autocapitalize="off">
           </div>
         </div>
         <div class="form-row col2">
@@ -1109,7 +1109,7 @@ function buildCampaignList(camps) {
         <div class="form-group"><label class="form-label">キャンペーン名</label>
           <input class="form-input" type="text" id="camp${i}_name" placeholder="例：乗り換えCB" value="${esc(c.name)}" maxlength="60"></div>
         <div class="form-group"><label class="form-label">申込電話番号</label>
-          <input class="form-input" type="tel" id="camp${i}_contactPhone" placeholder="090-1234-5678" value="${esc(c.contactPhone)}" maxlength="20" oninput="formatPhone(event)" autocomplete="off"></div>
+          <input class="form-input" type="text" inputmode="tel" id="camp${i}_contactPhone" placeholder="090-1234-5678" value="${esc(c.contactPhone)}" maxlength="20" oninput="formatPhone(event)" autocomplete="off" autocorrect="off" autocapitalize="off"></div>
       </div>
       <div class="form-row">
         <div class="form-group"><label class="form-label">申込メール</label>

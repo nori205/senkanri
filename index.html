@@ -371,6 +371,7 @@ td.cell-actions{padding-right:14px}
 </head>
 <body>
 <datalist id="emailDomainList"></datalist>
+<datalist id="optionNameList"></datalist>
 <div id="printArea"></div>
 
 <div class="layout">
@@ -1034,6 +1035,7 @@ function renderTable() {
       <td class="cell-actions">
         <div class="action-cell">
           <button class="icon-btn" onclick="openModal('${line.id}')" title="編集"><i class="ti ti-edit"></i></button>
+          <button class="icon-btn" onclick="duplicateLine('${line.id}')" title="複製"><i class="ti ti-copy"></i></button>
           <button class="icon-btn" onclick="openConfirm('${line.id}')" title="削除"><i class="ti ti-trash"></i></button>
         </div>
       </td>
@@ -1053,7 +1055,7 @@ function buildOptionList(opts) {
   document.getElementById('optionList').innerHTML=opts.map((o,i)=>`
     <div class="option-row">
       <span class="option-num">${i+1}</span>
-      <input class="form-input" type="text" id="opt${i}_name" placeholder="オプション名" value="${esc(o.name)}" maxlength="50" oninput="updateOptCal(${i})">
+      <input class="form-input" type="text" id="opt${i}_name" list="optionNameList" placeholder="オプション名" value="${esc(o.name)}" maxlength="50" oninput="updateOptCal(${i})">
       <input class="form-input date-input" type="date" id="opt${i}_date" value="${esc(o.date)}" oninput="updateOptCal(${i})" onchange="updateOptCal(${i})">
       <label class="check-label"><input type="checkbox" id="opt${i}_cancelled" ${o.cancelled?'checked':''}>解約済</label>
       <a class="cal-link ${o.date?'':'disabled'}" id="optCal${i}" href="${o.date?gcalURL(`オプション解約期限`,o.date,`回線：\nオプション：${o.name||''}`):'#'}" target="_blank" rel="noopener" title="Googleカレンダーに追加"><i class="ti ti-calendar-plus"></i></a>
@@ -1229,6 +1231,7 @@ function openModal(id) {
   document.getElementById('f_returnDate').value  =line.returnDate||'';
   document.getElementById('f_maintDays').value   =line.maintDays||'';
   document.getElementById('f_memo').value        =line.memo||'';
+  updateOptionNameList();
   buildOptionList(line.optionDeadlines);
   buildCampaignList(line.campaigns);
   calcUnlock();
@@ -1236,6 +1239,44 @@ function openModal(id) {
   document.body.style.overflow='hidden';
   setTimeout(()=>document.getElementById('f_carrier').focus(),150);
 }
+
+function duplicateLine(id) {
+  const src=lines.find(l=>l.id==id);
+  if (!src) return;
+  editingId=null;
+  document.getElementById('modalTitle').textContent='回線を追加（複製）';
+  document.getElementById('f_carrier').value     =src.carrier||'';
+  const otherEl=document.getElementById('f_carrier_other');
+  otherEl.value=src.carrierOther||'';
+  otherEl.style.display=src.carrier==='other'?'':'none';
+  document.getElementById('f_nickname').value    =src.nickname||'';
+  document.getElementById('f_phone').value       =src.phone||'';
+  document.getElementById('f_phone').oninput     =formatPhone;
+  document.getElementById('f_contractor').value  =src.contractor||'';
+  document.getElementById('f_user').value        =src.user||'';
+  document.getElementById('f_contractDate').value=src.contractDate||'';
+  document.getElementById('f_returnDate').value  =src.returnDate||'';
+  document.getElementById('f_maintDays').value   =src.maintDays||'';
+  document.getElementById('f_memo').value        =src.memo||'';
+  updateOptionNameList();
+  buildOptionList(JSON.parse(JSON.stringify(src.optionDeadlines||defaultOptions())));
+  buildCampaignList(JSON.parse(JSON.stringify(src.campaigns||defaultCampaigns())));
+  calcUnlock();
+  document.getElementById('overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+  setTimeout(()=>document.getElementById('f_carrier').focus(),150);
+}
+
+function updateOptionNameList() {
+  const dl=document.getElementById('optionNameList');
+  if (!dl) return;
+  const names=new Set();
+  lines.forEach(line=>{
+    (line.optionDeadlines||[]).forEach(o=>{ if (o.name&&o.name.trim()) names.add(o.name.trim()); });
+  });
+  dl.innerHTML=[...names].sort().map(n=>`<option value="${esc(n)}">`).join('');
+}
+
 function closeModal() {
   document.getElementById('overlay').classList.remove('open');
   editingId=null; document.body.style.overflow='';

@@ -512,7 +512,7 @@ td.cell-actions{padding-right:14px}
         <div class="form-row col2">
           <div class="form-group">
             <label class="form-label">電話番号</label>
-            <input class="form-input" type="text" inputmode="tel" id="f_phone" placeholder="090-1234-5678" maxlength="20" autocomplete="tel" autocorrect="off" autocapitalize="off">
+            <input class="form-input" type="text" inputmode="tel" id="f_phone" placeholder="090-1234-5678" maxlength="20" autocomplete="off" autocorrect="off" autocapitalize="off">
           </div>
         </div>
         <div class="form-row col2">
@@ -757,11 +757,18 @@ function onCarrierChange() {
   if (v === 'other') el.focus();
 }
 function formatPhone(e) {
-  let v = e.target.value.replace(/\D/g, '');
+  const input = e.target;
+  const pos = input.selectionEnd;
+  const prev = input.value.length;
+  let v = input.value.replace(/\D/g, '');
   if (v.length > 11) v = v.slice(0, 11);
-  if (v.length <= 3)      e.target.value = v;
-  else if (v.length <= 7) e.target.value = v.slice(0,3) + '-' + v.slice(3);
-  else                    e.target.value = v.slice(0,3) + '-' + v.slice(3,7) + '-' + v.slice(7);
+  let formatted;
+  if (v.length <= 3)      formatted = v;
+  else if (v.length <= 7) formatted = v.slice(0,3) + '-' + v.slice(3);
+  else                    formatted = v.slice(0,3) + '-' + v.slice(3,7) + '-' + v.slice(7);
+  input.value = formatted;
+  const newPos = Math.max(0, pos + (formatted.length - prev));
+  input.setSelectionRange(newPos, newPos);
 }
 
 const defaultOptions  = () => Array.from({length:5}, () => ({name:'', date:'', cancelled:false}));

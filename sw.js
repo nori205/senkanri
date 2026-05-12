@@ -1,4 +1,4 @@
-const CACHE = 'kaisen-v7';
+const CACHE = 'kaisen-v8';
 const ASSETS = ['./index.html', './manifest.json', './icon.svg'];
 
 self.addEventListener('install', e => {

@@ -145,6 +145,13 @@ td.cell-actions{padding-right:14px}
 .days-safe{background:var(--color-badge-bg);color:var(--color-badge-text)}
 .days-neutral{background:var(--color-badge-bg);color:var(--color-badge-text)}
 
+/* 契約者・使用者 */
+.persons-desktop{display:inline}
+.persons-mobile{display:none;gap:20px}
+.person-item{display:flex;flex-direction:column;gap:2px}
+.person-label{font-size:12px;font-weight:400;color:var(--color-text-muted)}
+.person-name{font-size:15px;font-weight:700;color:var(--color-text)}
+
 /* キャンペーンチップ（モバイルカード用） */
 .cell-camps{display:none}
 .card-camps{display:flex;flex-wrap:wrap;gap:6px}
@@ -284,6 +291,8 @@ td.cell-actions{padding-right:14px}
   td[data-label]::before{content:attr(data-label);font-size:13px;color:var(--color-text-muted);display:block;margin-bottom:1px}
   td.cell-name::before,td.cell-actions::before,td.cell-camps::before{content:none}
   td.cell-camps{display:block;padding-top:6px;border-top:.5px solid var(--color-border);margin-top:4px}
+  .persons-desktop{display:none}
+  .persons-mobile{display:flex}
   .camp-chip{font-size:13px;padding:4px 11px}
   .camp-chip i{font-size:12px}
   .action-cell{justify-content:flex-start}
@@ -1026,7 +1035,19 @@ function renderTable() {
           </div>
         </div>
       </td>
-      <td data-label="使用者">${esc(line.user||line.contractor||'—')}</td>
+      <td class="cell-persons">
+        <span class="persons-desktop">${esc(line.user||line.contractor||'—')}</span>
+        <div class="persons-mobile">
+          <div class="person-item">
+            <span class="person-label">契約者</span>
+            <span class="person-name">${esc(line.contractor||'—')}</span>
+          </div>
+          <div class="person-item">
+            <span class="person-label">使用者</span>
+            <span class="person-name">${esc(line.user||'—')}</span>
+          </div>
+        </div>
+      </td>
       <td class="cell-deadline" data-label="次の期限">
         <div class="deadline-desktop">${nd?`<div class="deadline-kind">${esc(nd.kind)}</div><div class="deadline-date">${esc(nd.label)}</div>`:'<div class="deadline-date">—</div>'}</div>
         <div class="deadline-mobile-list">${mobileListHtml}</div>

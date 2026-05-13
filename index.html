@@ -120,10 +120,9 @@ td.cell-actions{padding-right:14px}
 .carrier-bar{width:3px;border-radius:2px;flex-shrink:0;align-self:stretch}
 .carrier-rakuten,.carrier-docomo,.carrier-ahamo,.carrier-au,.carrier-uq,.carrier-povo,.carrier-softbank,.carrier-ymobile,.carrier-linemo,.carrier-other{background:var(--color-primary)}
 .carrier-none{background:var(--color-border)}
-.name-cell-text{display:flex;flex-direction:column;justify-content:center}
+.name-cell-text{display:flex;flex-direction:row;align-items:center;gap:8px}
 .line-name{font-size:13px;font-weight:500;color:var(--color-text)}
-.line-phone{font-size:11px;color:var(--color-text-muted)}
-.line-phone-label{font-size:10px;color:var(--color-text-muted);margin-right:3px}
+.line-phone{font-size:13px;color:var(--color-text-muted)}
 
 /* 期限セル */
 .deadline-kind{font-size:11px;color:var(--color-text-sub)}
@@ -307,8 +306,7 @@ td.cell-actions{padding-right:14px}
   .btn-outline{font-size:13px}
   .btn-primary{font-size:14px;font-weight:600}
   .line-name{font-size:17px;font-weight:700}
-  .line-phone{font-size:13px;color:var(--color-text-sub);font-weight:400}
-  .line-phone-label{font-size:12px}
+  .line-phone{font-size:15px;color:var(--color-text-sub);font-weight:400}
   .header-breadcrumb{font-size:17px;font-weight:600}
   .header-breadcrumb span{font-size:17px;font-weight:400}
   .days-badge{font-size:13px;font-weight:700}
@@ -1038,7 +1036,7 @@ function renderTable() {
           <div class="carrier-bar ${carrierBar(line.carrier)}"></div>
           <div class="name-cell-text">
             <div class="line-name">${esc(displayName)}</div>
-            ${line.phone?`<div class="line-phone"><span class="line-phone-label">電話番号</span>${esc(line.phone)}</div>`:''}
+            ${line.phone?`<div class="line-phone">${esc(line.phone)}</div>`:''}
           </div>
         </div>
       </td>

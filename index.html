@@ -31,6 +31,7 @@
   --header-h: 60px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{overflow-x:hidden}
 body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;background:var(--color-bg);color:var(--color-text);min-height:100vh;font-size:14px;line-height:1.6;font-weight:500}
 
 /* ── レイアウト ── */
@@ -297,6 +298,9 @@ td.cell-actions{padding-right:14px}
   .action-cell{justify-content:flex-start}
   .form-row.col2,.form-row.col3{grid-template-columns:1fr}
   .option-row .date-input{width:auto;flex:1}
+  .toolbar{flex-wrap:wrap;gap:8px;padding:12px 0}
+  .sort-group{width:100%}
+  .toolbar-right{width:100%}
   body{font-size:16px}
   .metric-label{font-size:14px}
   .metric-badge{font-size:12px}

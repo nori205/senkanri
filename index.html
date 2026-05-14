@@ -229,7 +229,8 @@ td.cell-actions{padding-right:14px}
 .unlock-display{background:var(--color-sub);border-radius:6px;padding:10px 14px;font-size:12px;color:var(--color-text-sub);margin-top:8px;display:flex;align-items:center;justify-content:space-between;gap:12px}
 .unlock-date-val{font-size:15px;font-weight:500;color:var(--color-text)}
 .cal-link-text{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--color-text-sub);text-decoration:none;padding:4px 8px;border:1px solid var(--color-border);border-radius:4px;background:var(--color-surface);white-space:nowrap;transition:background 50ms}
-.cal-link-text:hover{background:var(--color-sub)}
+.cal-link-text:hover:not(.disabled){background:var(--color-sub)}
+.cal-link-text.disabled{opacity:.35;pointer-events:none;cursor:default}
 
 /* テキストボタン */
 .btn-text{background:none;border:none;color:var(--color-text-muted);font-size:13px;cursor:pointer;padding:6px 10px;border-radius:5px;font-family:inherit;transition:background 50ms}
@@ -1136,8 +1137,8 @@ function updateOptCal(i) {
 
 function buildCampaignList(camps) {
   document.getElementById('campaignList').innerHTML=camps.map((c,i)=>{
-    const calUrl =c.grantYM?buildCampCalURL(c.name,c.grantYM,c.grantPeriod,c.grantSpecificDate):'#';
-    const calUrl2=c.grantYM?buildCampCal2URL(c.name,c.grantYM,c.grantPeriod):'#';
+    const calUrl =c.grantYM?buildCampCalURL(c.name,c.grantYM,c.grantPeriod,c.grantSpecificDate):'javascript:void(0)';
+    const calUrl2=(c.grantYM&&c.grantPeriod!=='specific')?buildCampCal2URL(c.name,c.grantYM,c.grantPeriod):'javascript:void(0)';
     return `<div class="campaign-block">
       <div class="campaign-block-header">
         <div class="campaign-num">キャンペーン ${i+1}</div>
@@ -1170,7 +1171,7 @@ function buildCampaignList(camps) {
           <input class="form-input" type="date" id="camp${i}_specificDate" value="${esc(c.grantSpecificDate)}" oninput="updateCampCal(${i})"></div>
         <div class="form-group"><label class="form-label">金額</label>
           <input class="form-input" type="text" id="camp${i}_amount" placeholder="例：10,000円" value="${esc(c.amount)}" maxlength="20"></div>
-        <div style="display:flex;align-items:flex-end;gap:6px;padding-bottom:0;flex-wrap:wrap" id="campCalGrp${i}" style="${c.grantPeriod==='specific'?'display:none':''}">
+        <div style="display:flex;align-items:flex-end;gap:6px;padding-bottom:0;flex-wrap:wrap;${c.grantPeriod==='specific'?'display:none':''}" id="campCalGrp${i}">
           <a class="cal-link-text ${c.grantYM?'':'disabled'}" id="campCal${i}" href="${calUrl}" target="_blank" rel="noopener" style="margin-bottom:0">
             <i class="ti ti-calendar-plus"></i> ${calBtn1Label(c.grantPeriod)}
           </a>
@@ -1206,6 +1207,8 @@ function onPeriodChange(i) {
   const period=document.getElementById(`camp${i}_grantPeriod`)?.value||'late';
   const sg=document.getElementById(`specificGrp${i}`);
   if (sg) sg.style.display=period==='specific'?'':'none';
+  const cg=document.getElementById(`campCalGrp${i}`);
+  if (cg) cg.style.display=period==='specific'?'none':'flex';
   updateCampCal(i);
 }
 
@@ -1217,11 +1220,19 @@ function updateCampCal(i) {
   const btn   =document.getElementById(`campCal${i}`);
   const btn2  =document.getElementById(`campCal2_${i}`);
   if (btn) {
-    if (ym) { btn.href=buildCampCalURL(name,ym,period,sd); btn.classList.remove('disabled'); }
-    else { btn.href='#'; btn.classList.add('disabled'); }
+    if (ym && period!=='specific') {
+      btn.href=buildCampCalURL(name,ym,period,sd);
+      btn.classList.remove('disabled');
+    } else if (ym && period==='specific' && sd) {
+      btn.href=buildCampCalURL(name,ym,period,sd);
+      btn.classList.remove('disabled');
+    } else {
+      btn.href='javascript:void(0)';
+      btn.classList.add('disabled');
+    }
   }
   if (btn2) {
-    const url2=ym&&period!=='specific'?buildCampCal2URL(name,ym,period):'#';
+    const url2=ym&&period!=='specific'?buildCampCal2URL(name,ym,period):'javascript:void(0)';
     btn2.href=url2;
     btn2.classList.toggle('disabled', !ym||period==='specific');
   }

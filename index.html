@@ -10,6 +10,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="回線管理">
 <link rel="apple-touch-icon" href="icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
 <style>
 :root {
@@ -32,7 +33,7 @@
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{overflow-x:hidden}
-body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;background:var(--color-bg);color:var(--color-text);min-height:100vh;font-size:14px;line-height:1.6;font-weight:500}
+body{font-family:'M PLUS Rounded 1c','Hiragino Sans','Hiragino Kaku Gothic ProN','Yu Gothic','Meiryo',sans-serif;background:var(--color-bg);color:var(--color-text);min-height:100vh;font-size:14px;line-height:1.6;font-weight:500}
 
 /* ── レイアウト ── */
 .layout{display:flex;min-height:100vh}
@@ -62,7 +63,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP"
 .search-box i{font-size:13px;color:var(--color-text-muted);flex-shrink:0}
 .search-box input{border:none;outline:none;background:transparent;font-size:12px;color:var(--color-text);width:100%;font-family:inherit}
 .search-box input::placeholder{color:var(--color-text-muted)}
-.btn-primary{height:32px;padding:0 14px;background:var(--color-primary);color:var(--color-primary-text);border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap;transition:opacity 50ms;font-family:inherit}
+.btn-primary{height:32px;padding:0 14px;background:var(--color-primary);color:var(--color-primary-text);border:none;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap;transition:opacity 50ms;font-family:inherit}
 .btn-primary:hover{opacity:.85}
 .btn-primary:active{transform:scale(0.98)}
 
@@ -74,7 +75,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP"
 .metric-card{background:var(--color-surface);border:.5px solid var(--color-border);border-radius:10px;padding:14px}
 .metric-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .metric-label{font-size:11px;color:var(--color-text-muted)}
-.metric-badge{font-size:10px;padding:1px 6px;border-radius:3px;font-weight:500}
+.metric-badge{font-size:10px;padding:1px 6px;border-radius:20px;font-weight:500}
 .badge-urgent{background:var(--color-text);color:var(--color-bg)}
 .badge-warning{background:var(--color-border-strong);color:var(--color-text)}
 .metric-count{font-size:22px;font-weight:500;color:var(--color-text);font-variant-numeric:tabular-nums}
@@ -91,7 +92,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP"
 
 /* ── ツールバー ── */
 .toolbar{display:flex;align-items:center;justify-content:space-between;padding:16px 0}
-.sort-group{display:flex;background:var(--color-sub);border:1px solid var(--color-border);border-radius:6px;overflow:hidden}
+.sort-group{display:flex;background:var(--color-sub);border:1px solid var(--color-border);border-radius:20px;overflow:hidden}
 .sort-btn{padding:0 12px;height:28px;font-size:11px;color:var(--color-text-sub);background:transparent;border:none;cursor:pointer;font-family:inherit;transition:background 50ms,color 50ms;white-space:nowrap}
 .sort-btn.active{background:var(--color-accent);color:#ffffff;font-weight:500}
 .sort-btn:hover:not(.active){background:var(--color-sub)}
@@ -147,7 +148,7 @@ td.cell-actions{padding-right:14px}
 .dl-date{font-size:15px;font-weight:500;color:var(--color-text-sub);margin:0;flex:1}
 
 /* 残り日数 */
-.days-badge{display:inline-flex;align-items:center;gap:4px;padding:5px 12px;border-radius:7px;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
+.days-badge{display:inline-flex;align-items:center;gap:4px;padding:5px 12px;border-radius:20px;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
 .days-badge i{font-size:13px}
 .days-urgent{background:var(--color-primary);color:var(--color-primary-text)}
 .days-warning{background:var(--color-badge-bg);color:var(--color-badge-text)}

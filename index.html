@@ -235,13 +235,13 @@ td.cell-actions{padding-right:14px}
 
 /* マスコット */
 .mascot-area{display:flex;align-items:center;gap:14px;margin-bottom:16px;padding:12px 16px;background:var(--color-sub);border:.5px solid var(--color-border);border-radius:12px}
-.mascot-char{flex-shrink:0}
-.mascot-char svg{display:block;image-rendering:pixelated;animation:mascot-bob 2.4s ease-in-out infinite}
-@keyframes mascot-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.mascot-char{flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.mascot-emoji{font-size:52px;line-height:1;display:block;animation:mascot-bob 2.4s ease-in-out infinite;user-select:none}
+@keyframes mascot-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 .mascot-bubble{flex:1;background:var(--color-surface);border:.5px solid var(--color-border);border-radius:10px;padding:10px 14px;position:relative;min-width:0}
 .mascot-bubble::before{content:'';position:absolute;left:-7px;top:50%;transform:translateY(-50%);border:7px solid transparent;border-right-color:var(--color-border)}
 .mascot-bubble::after{content:'';position:absolute;left:-5px;top:50%;transform:translateY(-50%);border:6px solid transparent;border-right-color:var(--color-surface)}
-.mascot-main{font-size:13px;font-weight:600;color:var(--color-text);margin:0;line-height:1.5}
+.mascot-main{font-size:13px;font-weight:500;color:var(--color-text-sub);margin:0;line-height:1.5}
 .mascot-sub{font-size:11px;color:var(--color-text-muted);margin:2px 0 0;line-height:1.4}
 
 /* テキストボタン */
@@ -324,7 +324,7 @@ td.cell-actions{padding-right:14px}
   .sort-group{width:100%}
   .toolbar-right{width:100%}
   .mascot-area{padding:10px 12px;gap:10px}
-  .mascot-char svg{width:36px;height:63px}
+  .mascot-emoji{font-size:40px}
   .mascot-main{font-size:14px}
   .mascot-sub{font-size:12px}
   body{font-size:16px}
@@ -446,33 +446,7 @@ td.cell-actions{padding-right:14px}
       <!-- マスコット -->
       <div class="mascot-area" id="mascotArea">
         <div class="mascot-char">
-          <svg width="48" height="84" viewBox="0 0 48 84" xmlns="http://www.w3.org/2000/svg" style="image-rendering:pixelated">
-            <!-- 頭 -->
-            <rect x="12" y="0"  width="24" height="6" fill="#F5C89A"/>
-            <rect x="6"  y="6"  width="36" height="6" fill="#F5C89A"/>
-            <rect x="6"  y="12" width="36" height="6" fill="#F5C89A"/>
-            <rect x="12" y="12" width="6"  height="6" fill="#2C2A26"/>
-            <rect x="30" y="12" width="6"  height="6" fill="#2C2A26"/>
-            <rect x="6"  y="18" width="36" height="6" fill="#F5C89A"/>
-            <rect x="18" y="18" width="12" height="6" fill="#F0B89A"/>
-            <rect x="12" y="24" width="24" height="6" fill="#F5C89A"/>
-            <!-- 胴体 -->
-            <rect x="12" y="30" width="24" height="6" fill="#B59CC4"/>
-            <rect x="6"  y="36" width="36" height="6" fill="#B59CC4"/>
-            <rect x="0"  y="42" width="48" height="6" fill="#B59CC4"/>
-            <rect x="0"  y="48" width="48" height="6" fill="#B59CC4"/>
-            <rect x="6"  y="54" width="36" height="6" fill="#B59CC4"/>
-            <!-- 足 -->
-            <rect x="12" y="60" width="6"  height="6" fill="#8B7BA0"/>
-            <rect x="30" y="60" width="6"  height="6" fill="#8B7BA0"/>
-            <rect x="12" y="66" width="6"  height="6" fill="#8B7BA0"/>
-            <rect x="30" y="66" width="6"  height="6" fill="#8B7BA0"/>
-            <!-- 靴 -->
-            <rect x="6"  y="72" width="12" height="6" fill="#3A2A4A"/>
-            <rect x="30" y="72" width="12" height="6" fill="#3A2A4A"/>
-            <rect x="6"  y="78" width="12" height="6" fill="#3A2A4A"/>
-            <rect x="30" y="78" width="12" height="6" fill="#3A2A4A"/>
-          </svg>
+          <span class="mascot-emoji">🧚‍♀️</span>
         </div>
         <div class="mascot-bubble">
           <p class="mascot-main" id="mascotMain">読み込み中…</p>

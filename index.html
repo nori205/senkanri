@@ -233,6 +233,17 @@ td.cell-actions{padding-right:14px}
 .cal-link-text:hover:not(.disabled){background:var(--color-sub)}
 .cal-link-text.disabled{opacity:.35;pointer-events:none;cursor:default}
 
+/* マスコット */
+.mascot-area{display:flex;align-items:center;gap:14px;margin-bottom:16px;padding:12px 16px;background:var(--color-sub);border:.5px solid var(--color-border);border-radius:12px}
+.mascot-char{flex-shrink:0}
+.mascot-char svg{display:block;image-rendering:pixelated;animation:mascot-bob 2.4s ease-in-out infinite}
+@keyframes mascot-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.mascot-bubble{flex:1;background:var(--color-surface);border:.5px solid var(--color-border);border-radius:10px;padding:10px 14px;position:relative;min-width:0}
+.mascot-bubble::before{content:'';position:absolute;left:-7px;top:50%;transform:translateY(-50%);border:7px solid transparent;border-right-color:var(--color-border)}
+.mascot-bubble::after{content:'';position:absolute;left:-5px;top:50%;transform:translateY(-50%);border:6px solid transparent;border-right-color:var(--color-surface)}
+.mascot-main{font-size:13px;font-weight:600;color:var(--color-text);margin:0;line-height:1.5}
+.mascot-sub{font-size:11px;color:var(--color-text-muted);margin:2px 0 0;line-height:1.4}
+
 /* テキストボタン */
 .btn-text{background:none;border:none;color:var(--color-text-muted);font-size:13px;cursor:pointer;padding:6px 10px;border-radius:5px;font-family:inherit;transition:background 50ms}
 .btn-text:hover{background:var(--color-sub)}
@@ -312,6 +323,10 @@ td.cell-actions{padding-right:14px}
   .toolbar{flex-wrap:wrap;gap:8px;padding:12px 0}
   .sort-group{width:100%}
   .toolbar-right{width:100%}
+  .mascot-area{padding:10px 12px;gap:10px}
+  .mascot-char svg{width:36px;height:63px}
+  .mascot-main{font-size:14px}
+  .mascot-sub{font-size:12px}
   body{font-size:16px}
   .metric-label{font-size:14px}
   .metric-badge{font-size:12px}
@@ -428,6 +443,43 @@ td.cell-actions{padding-right:14px}
     </header>
 
     <div class="content">
+      <!-- マスコット -->
+      <div class="mascot-area" id="mascotArea">
+        <div class="mascot-char">
+          <svg width="48" height="84" viewBox="0 0 48 84" xmlns="http://www.w3.org/2000/svg" style="image-rendering:pixelated">
+            <!-- 頭 -->
+            <rect x="12" y="0"  width="24" height="6" fill="#F5C89A"/>
+            <rect x="6"  y="6"  width="36" height="6" fill="#F5C89A"/>
+            <rect x="6"  y="12" width="36" height="6" fill="#F5C89A"/>
+            <rect x="12" y="12" width="6"  height="6" fill="#2C2A26"/>
+            <rect x="30" y="12" width="6"  height="6" fill="#2C2A26"/>
+            <rect x="6"  y="18" width="36" height="6" fill="#F5C89A"/>
+            <rect x="18" y="18" width="12" height="6" fill="#F0B89A"/>
+            <rect x="12" y="24" width="24" height="6" fill="#F5C89A"/>
+            <!-- 胴体 -->
+            <rect x="12" y="30" width="24" height="6" fill="#B59CC4"/>
+            <rect x="6"  y="36" width="36" height="6" fill="#B59CC4"/>
+            <rect x="0"  y="42" width="48" height="6" fill="#B59CC4"/>
+            <rect x="0"  y="48" width="48" height="6" fill="#B59CC4"/>
+            <rect x="6"  y="54" width="36" height="6" fill="#B59CC4"/>
+            <!-- 足 -->
+            <rect x="12" y="60" width="6"  height="6" fill="#8B7BA0"/>
+            <rect x="30" y="60" width="6"  height="6" fill="#8B7BA0"/>
+            <rect x="12" y="66" width="6"  height="6" fill="#8B7BA0"/>
+            <rect x="30" y="66" width="6"  height="6" fill="#8B7BA0"/>
+            <!-- 靴 -->
+            <rect x="6"  y="72" width="12" height="6" fill="#3A2A4A"/>
+            <rect x="30" y="72" width="12" height="6" fill="#3A2A4A"/>
+            <rect x="6"  y="78" width="12" height="6" fill="#3A2A4A"/>
+            <rect x="30" y="78" width="12" height="6" fill="#3A2A4A"/>
+          </svg>
+        </div>
+        <div class="mascot-bubble">
+          <p class="mascot-main" id="mascotMain">読み込み中…</p>
+          <p class="mascot-sub"  id="mascotSub" style="display:none"></p>
+        </div>
+      </div>
+
       <!-- 契約者サマリー -->
       <div id="contractorSummary" class="contractor-summary" style="display:none"></div>
 
@@ -1025,6 +1077,7 @@ function renderContractorSummary() {
 
 function renderTable() {
   renderContractorSummary();
+  updateMascotMessage();
   const unclaimed=countUnclaimedCB();
   const banner=document.getElementById('unclaimedBanner');
   const bannerText=document.getElementById('unclaimedBannerText');
@@ -1737,6 +1790,62 @@ function insertTestData() {
 // ── SW登録 ──────────────────────────────────────
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./sw.js').catch(()=>{});
+}
+
+// ── マスコットメッセージ ────────────────────────
+function getMascotMessage() {
+  if (!lines || !lines.length) {
+    return { main: 'ようこそ！まずは回線を追加してね', sub: null };
+  }
+  const urgent = [], warning = [], info = [];
+  lines.forEach(line => {
+    const lineName = line.name || '回線';
+    (line.optionDeadlines || []).forEach(opt => {
+      if (!opt.date || opt.cancelled) return;
+      const d = daysUntil(opt.date);
+      if (d === null || d < 0) return;
+      const n = opt.name || 'オプション';
+      if (d <= 3)  urgent.push({ main: `「${n}」の解約まであと${d}日！`, sub: `${lineName}のオプション解約を忘れずに` });
+      else if (d <= 14) warning.push({ main: `「${n}」の解約期限が近づいてるよ`, sub: `あと${d}日（${lineName}）` });
+    });
+    if (line.contractDate && line.maintDays) {
+      const unlockStr = addDays(line.contractDate, parseInt(line.maintDays));
+      if (unlockStr) {
+        const d = daysUntil(unlockStr);
+        if (d !== null && d >= 0) {
+          if (d <= 7)  warning.push({ main: `${lineName}がもうすぐ乗り換えできるよ！`, sub: `MNP解禁まであと${d}日` });
+          else if (d <= 30) info.push({ main: `${lineName}の乗り換え解禁が近づいてる`, sub: `あと${d}日でMNP可能に` });
+        }
+      }
+    }
+    (line.campaigns || []).forEach(c => {
+      if (!c.name || c.granted || !c.grantYM) return;
+      const dateStr = grantPeriodToDate(c.grantYM, c.grantPeriod, c.grantSpecificDate);
+      if (!dateStr) return;
+      const d = daysUntil(dateStr);
+      if (d === null) return;
+      if (d >= -14 && d < 0)  urgent.push({ main: `「${c.name}」のCB、もう来てる？`, sub: `${Math.abs(d)}日前が付与予定日だったよ` });
+      else if (d >= 0 && d <= 7)  warning.push({ main: `「${c.name}」のCBがもうすぐ！`, sub: `あと${d}日で付与予定` });
+      else if (d <= 21)  info.push({ main: `「${c.name}」のCB付与が近いよ`, sub: `あと${d}日ほどで付与予定` });
+    });
+  });
+  if (urgent.length)  return urgent[Math.floor(Math.random() * urgent.length)];
+  if (warning.length) return warning[Math.floor(Math.random() * warning.length)];
+  if (info.length)    return info[Math.floor(Math.random() * info.length)];
+  const defaults = [
+    { main: '今日も管理バッチリ！', sub: '期限が近いものはなさそうだよ' },
+    { main: 'キャンペーンのCB、忘れてない？', sub: null },
+    { main: `回線を${lines.length}件管理中！`, sub: 'これからもよろしくね' },
+    { main: '乗り換えのタイミング、確認してみて', sub: null },
+  ];
+  return defaults[Math.floor(Math.random() * defaults.length)];
+}
+function updateMascotMessage() {
+  const msg = getMascotMessage();
+  const mainEl = document.getElementById('mascotMain');
+  const subEl  = document.getElementById('mascotSub');
+  if (mainEl) mainEl.textContent = msg.main;
+  if (subEl)  { subEl.textContent = msg.sub || ''; subEl.style.display = msg.sub ? '' : 'none'; }
 }
 
 // ── 初期化 ──────────────────────────────────────
